@@ -13,5 +13,6 @@ depends:
 	nnet,
 	e1071,
   pROC,
-  glmnet
+  glmnet,
+  pROC
 RoxygenNote: 6.1.1
