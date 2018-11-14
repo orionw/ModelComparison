@@ -14,13 +14,26 @@ ModelComparison <- function(ModelList) {
   return(value)
 }
 
-getROCGraph <- function(modelList, labels) {
+getROCGraph <- function(modelList, test_data, multi_class, labels) {
   i = 0
   for (model in modelList) {
-  preds - predict(model, newdata = labels, type="raw")
-  assign(paste("roc.",i), roc(labels, preds))
+    if (!is.null(model)) {
+      print(model)
+      preds <- predict(model, newdata = test_data, type="raw")
+      print("Pred done")
+      if (multi_class) {
+        print(length(as.numeric(preds)))
+        print(dim(test_data))
+        print(length(labels))
+        assign(paste("roc.",i), pROC::multiclass.roc(labels, as.numeric(preds)))
+
+      } else {
+        assign(paste("roc.",i), pROC::roc(test_data, preds))
+      }
     i = i + 1
+    }
   }
+  print("Assigned")
   #Plot ROC curves side by side
   plot(roc.0, col = rainbow(0))
   for (count in i) {
@@ -33,6 +46,7 @@ getROCGraph <- function(modelList, labels) {
          col = c("blue", "red", "green", "purple"), lty = c(1), ncol = 1, text.font = 4, box.lty = 0)
 
   return(recordPlot(load=NULL, attach=NULL))
+
 }
 
 #' This function evalutates many different machine learning models and returns those models with comparison charts
@@ -42,38 +56,77 @@ getROCGraph <- function(modelList, labels) {
 #' @export
 #' @examples
 #' getModelComparisons()
-getModelComparisons <-function(trainingSet,trainingClasses, testSet=NULL, modelList=NULL, dataSetSize="small") {
+getModelComparisons <-function(trainingSet,training_classes_input, validation="80/20", modelList=NULL, dataSetSize="small") {
   print("In Function")
-  trctrl <- caret::trainControl(method = "cv", savePredictions = T)
-  set.seed(1)
-  svmLinear <- caret::train(trainingSet, trainingClasses, method = "svmLinear",
+
+  # prep the data if not already a factor
+  training_classes_input = as.factor(training_classes_input)
+  set.seed(sample(1:9999999, 1))
+  multi_class = levels(training_classes_input) > 2
+
+  # Get the method of validation and prepare testing and training sets
+  if (validation == "80/20") {
+    # partition the data into training and testing data stratified by class
+    trainIndex <- caret::createDataPartition(training_classes_input, p=0.8, list=F)
+    # get the dataframes
+    training_data <- trainingSet[trainIndex,]
+    testing_data <- trainingSet[-trainIndex,]
+    # get the labels
+    training_classes <- training_classes_input[trainIndex]
+    testing_classes <- training_classes_input[-trainIndex]
+    # we will take care of the validation
+    trctrl <- caret::trainControl(method = "none", savePredictions = T)
+  } else {
+    # we don't need a specific testing set
+    training_data = trainingSet
+    testing_data <- trainingSet
+    testing_classes <- training_classes
+    if (validation == "cv") {
+      trctrl <- caret::trainControl(method = "cv", savePredictions = T)
+    } else {
+      trctrl <- caret::trainControl(method = "none", savePredictions = T)
+    }
+  }
+
+  print("validation method complete")
+  tune_length = 1
+
+  svmLinear <- caret::train(training_data, training_classes, method = "svmLinear",
                       trControl=trctrl,
                       preProcess = c("center", "scale"),
-                      tuneLength = 10)
+                      tuneLength = tune_length)
 
-  neuralNet <- caret::train(trainingSet, trainingClasses, method = "nnet",
+  neuralNet <- caret::train(training_data, training_classes, method = "nnet",
                              trControl=trctrl,
                              preProcess = c("center", "scale"),
-                             tuneLength = 10)
+                             tuneLength = tune_length)
 
-  glmnet <- caret::train(trainingSet, trainingClasses, method = "glmnet",
+  glmnet <- caret::train(training_data, as.factor(training_classes), method = "glmnet",
                             trControl=trctrl,
                             preProcess = c("center", "scale"),
-                            tuneLength = 10)
+                            tuneLength = tune_length)
 
-  randomForest <- caret::train(trainingSet, trainingClasses, method = "rf",
+
+  randomForest <- caret::train(training_data, training_classes, method = "rf",
                             trControl=trctrl,
                             preProcess = c("center", "scale"),
-                            tuneLength = 10)
+                            tuneLength = tune_length)
 
-  glm_model <- caret::train(trainingSet, trainingClasses, method = "glm",
+  if (!multi_class) {
+
+  glm_model <- caret::train(training_data, as.factor(training_classes), method = "glm",
                             trControl=trctrl,
                             preProcess = c("center", "scale"),
-                            tuneLength = 10)
+                            tuneLength = tune_length)
+  } else {
+    glm_model = NULL
+  }
 
-  print("Done PRocessing")
+  print("Done Processing")
+
+  # get the visuals for all the models
   modelVec = list(svmLinear, neuralNet, glmnet, randomForest, glm_model)
-  visualizeROC <- getROCGraph(modelVec, trainingClasses)
+  visualizeROC <- getROCGraph(modelVec, test_data = testing_data, multi_class = multi_class,labels=testing_classes)
   names(modelVec) <- c("svmLinear", "neuralNet", "glmnet", "randomForest", "glm", "compareROC")
   modelComp <- ModelComparison(modelVec, visualizeROC)
   return(modelComp)

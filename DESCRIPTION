@@ -14,5 +14,6 @@ depends:
 	e1071,
   pROC,
   glmnet,
-  pROC
+  pROC,
+  recordPlot
 RoxygenNote: 6.1.1
