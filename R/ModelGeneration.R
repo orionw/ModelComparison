@@ -25,22 +25,41 @@ getROCGraph <- function(modelList, test_data, multi_class, labels) {
         print(length(as.numeric(preds)))
         print(dim(test_data))
         print(length(labels))
-        assign(paste("roc.",i), pROC::multiclass.roc(labels, as.numeric(preds)))
+        assign(paste("roc.",i, sep=""), pROC::multiclass.roc(labels, as.numeric(preds)))
+        print(paste("roc.",i, sep=""))
 
       } else {
-        assign(paste("roc.",i), pROC::roc(test_data, preds))
+        assign(paste("roc.",i, sep=""), pROC::roc(test_data, preds))
+        print(paste("roc.",i), sep = "")
       }
     i = i + 1
     }
   }
+  # deal with this later.  Quick fix to resolve i
+  i = i - 1
   print("Assigned")
   #Plot ROC curves side by side
-  plot(roc.0, col = rainbow(0))
-  for (count in i) {
-    # adjust for the first one being outside the loop
-    count = count + 1
-    plot(paste("roc.", i), col = rainbow(i), add=T)
+  if (multi_class) {
+    rs <- roc.0[['rocs']]
+    pROC::plot.roc(rs[[1]])
+    sapply(2:length(rs),function(i) pROC::lines.roc(rs[[i]],col=i))
+    #plot(roc.0, col = rainbow(0), add=T)
+    #browser()
+    p <- recordPlot()
+    plot.new() ## clean up device
+    p # redraw
+    print("plotted first")
+    for (count in i) {
+      # adjust for the first one being outside the loop
+      count = count + 1
+      rs <- get(paste("roc.", i, sep=""))[['rocs']]
+      pROC::plot.roc(rs[[1]])
+      sapply(1:length(rs),function(i) pROC::lines.roc(rs[[i]],col=i))
+    }
+  } else {
+    # Do regular ROC here
   }
+  print("finished plottting")
 
   legend("bottomright",legend = c("Two-Factor (0.5825)","Full GLM (0.6841)", "SVM1 (0.7553)", "*SVM validate1 (0.7581)", "Neural Net (.8242)"), cex = .7,
          col = c("blue", "red", "green", "purple"), lty = c(1), ncol = 1, text.font = 4, box.lty = 0)
