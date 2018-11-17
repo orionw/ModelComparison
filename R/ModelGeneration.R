@@ -1,11 +1,12 @@
 #' ModelComparisons()
-ModelComparison <- function(ModelList) {
+ModelComparison <- function(ModelList, visualize) {
   # we can add our own integrity checks
   value <- list(svmLinear = ModelList["svmLinear"],
                 neuralNet = ModelList["neuralNet"],
                 glmnet = ModelList["glmnet"],
                 randomForest = ModelList["randomForest"],
-                glm = ModelList["glm"])
+                glm = ModelList["glm"],
+                ROCs = visualize)
 
   # class can be set using class() or attr() function
   class(value) <- "ModelComparison"
@@ -14,58 +15,62 @@ ModelComparison <- function(ModelList) {
   return(value)
 }
 
-getROCGraph <- function(modelList, test_data, multi_class, labels) {
-  i = 0
+#' This function evalutates many different machine learning models and returns those models with comparison charts
+#' @param trainingSet the dataset to be trained on
+#' @param trainingClasses the labels of the training set
+#' @keywords
+#' @export
+#' @examples
+#' plot()
+plot.ModelComparison <- function(object) {
+
+}
+
+
+
+getROCGraph <- function(modelList, test_data,  labels, multi_class) {
+  i = 1
   for (model in modelList) {
     if (!is.null(model)) {
       print(model)
+      print(dim(test_data))
       preds <- predict(model, newdata = test_data, type="raw")
+      print(length(preds))
       print("Pred done")
       if (multi_class) {
-        print(length(as.numeric(preds)))
-        print(dim(test_data))
-        print(length(labels))
         assign(paste("roc.",i, sep=""), pROC::multiclass.roc(labels, as.numeric(preds)))
         print(paste("roc.",i, sep=""))
-
       } else {
-        assign(paste("roc.",i, sep=""), pROC::roc(test_data, preds))
+        assign(paste("roc.",i, sep=""), pROC::roc(labels, as.numeric(preds)))
         print(paste("roc.",i), sep = "")
       }
     i = i + 1
     }
   }
-  # deal with this later.  Quick fix to resolve i
-  i = i - 1
-  print("Assigned")
+
+  i = i -1
+################# see plot(a$ROCs[2][1][[1]]) ################
+
+ browser()
   #Plot ROC curves side by side
+  plotsToReturn <- vector(mode = "list", i-1)
   if (multi_class) {
-    rs <- roc.0[['rocs']]
-    pROC::plot.roc(rs[[1]])
-    sapply(2:length(rs),function(i) pROC::lines.roc(rs[[i]],col=i))
-    #plot(roc.0, col = rainbow(0), add=T)
-    #browser()
-    p <- recordPlot()
-    plot.new() ## clean up device
-    p # redraw
-    print("plotted first")
-    for (count in i) {
+    for (count in 1:i) {
       # adjust for the first one being outside the loop
-      count = count + 1
-      rs <- get(paste("roc.", i, sep=""))[['rocs']]
-      pROC::plot.roc(rs[[1]])
-      sapply(1:length(rs),function(i) pROC::lines.roc(rs[[i]],col=i))
+      rs <- get(paste("roc.", count, sep=""))[['rocs']]
+      plotsToReturn[[count]] <- pROC::roc(rs[[1]])
     }
   } else {
-    # Do regular ROC here
+    for (count in 1:i) {
+      # Do regular ROC here
+      plotsToReturn[[count]] = get(paste("roc.", count, sep=""))
+    }
   }
-  print("finished plottting")
 
-  legend("bottomright",legend = c("Two-Factor (0.5825)","Full GLM (0.6841)", "SVM1 (0.7553)", "*SVM validate1 (0.7581)", "Neural Net (.8242)"), cex = .7,
-         col = c("blue", "red", "green", "purple"), lty = c(1), ncol = 1, text.font = 4, box.lty = 0)
+  #legend("bottomright",legend = c("Two-Factor (0.5825)","Full GLM (0.6841)", "SVM1 (0.7553)", "*SVM validate1 (0.7581)", "Neural Net (.8242)"), cex = .7,
+   #      col = c("blue", "red", "green", "purple"), lty = c(1), ncol = 1, text.font = 4, box.lty = 0)
 
-  return(recordPlot(load=NULL, attach=NULL))
-
+  return(plotsToReturn)
 }
 
 #' This function evalutates many different machine learning models and returns those models with comparison charts
@@ -81,7 +86,7 @@ getModelComparisons <-function(trainingSet,training_classes_input, validation="8
   # prep the data if not already a factor
   training_classes_input = as.factor(training_classes_input)
   set.seed(sample(1:9999999, 1))
-  multi_class = levels(training_classes_input) > 2
+  multi_class = (nlevels(training_classes_input) > 2)
 
   # Get the method of validation and prepare testing and training sets
   if (validation == "80/20") {
@@ -133,10 +138,10 @@ getModelComparisons <-function(trainingSet,training_classes_input, validation="8
 
   if (!multi_class) {
 
-  glm_model <- caret::train(training_data, as.factor(training_classes), method = "glm",
-                            trControl=trctrl,
-                            preProcess = c("center", "scale"),
-                            tuneLength = tune_length)
+      glm_model <- caret::train(training_data, as.factor(training_classes), method = "glm",
+                                trControl=trctrl,
+                                preProcess = c("center", "scale"),
+                                tuneLength = tune_length)
   } else {
     glm_model = NULL
   }
@@ -146,7 +151,7 @@ getModelComparisons <-function(trainingSet,training_classes_input, validation="8
   # get the visuals for all the models
   modelVec = list(svmLinear, neuralNet, glmnet, randomForest, glm_model)
   visualizeROC <- getROCGraph(modelVec, test_data = testing_data, multi_class = multi_class,labels=testing_classes)
-  names(modelVec) <- c("svmLinear", "neuralNet", "glmnet", "randomForest", "glm", "compareROC")
+  names(modelVec) <- c("svmLinear", "neuralNet", "glmnet", "randomForest", "glm")
   modelComp <- ModelComparison(modelVec, visualizeROC)
   return(modelComp)
 }
