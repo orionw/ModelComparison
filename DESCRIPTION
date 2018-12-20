@@ -1,6 +1,6 @@
 Package: BestModel
 Title: A package to run, tune, and compare standard machine learning models in one command.
-Version: 0.0.0.9000
+Version: 0.0.1.0000
 Authors@R: person("Orion", "Weller", email = "first.last@example.com", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
 Depends: R (>= 3.5.1)
