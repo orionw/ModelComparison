@@ -9,10 +9,12 @@ ModelComparison <- function(ModelList, multi_class) {
                 glm = ModelList["glm"])
 
   # class can be set using class() or attr() function
-  class(comparison) <- "ModelComparison"
   comparison$model_list <- model_list
-  comparison$.multiclass <- multi_class
+  comparison$.multi_class <- multi_class
   print(comparison)
+  print(multi_class)
+  print(comparison$.multi_class)
+  class(comparison) <- "ModelComparison"
   print(class(comparison))
   return(comparison)
 }
@@ -24,24 +26,45 @@ ModelComparison <- function(ModelList, multi_class) {
 #' @export
 #' @examples
 #' plot()
-plot.ModelComparison <- function(object, labels, predictions_list) {
-  if (object$.multiclass) {
-    # do stuff later
-  } else {
-    for (model in object.modelList) {
+plot.ModelComparison <- function(object, labels,x.values) {
+  print("In function")
+  print(object$model_list)
+  print(str(x.values))
+  print("done")
+  # if (object$.multiclass) {
+  #   # do stuff later
+  #   print("IS MULTICLASS")
+  # } else {
+    print("Before predict")
+    pred_basic <- predict(object$model_list, newdata=x.values, type="prob")
+    print(pred_basic)
+    print("predicted")
+    print(length(pred_basic))
+    i = 0
+    colorPal = rainbow(length(object$model_list))
+    for (model in object$model_list) {
+      i = i + 1
       if (!is.null(model)) {
         if (i == 1) {
           # do this to init the plot
-          roc_plot <- pROC::roc(labels, predictions_list[[i]])
-          plot(roc_plot, col = "red")
+          assertthat::are_equal(length(labels), length(pred_basic[[i]]))
+          print(labels)
+          print(class(pred_basic[[i]][[1]][,1]))
+          print((pred_basic[[i]][[1]][,1]))
+
+          print(str(labels))
+          roc_plot <- pROC::roc(labels, pred_basic[[i]][[1]][,1])
+          plot(roc_plot, col = colorPal[i], title="ROC Comparison")
         } else {
-          roc_plot <- pROC::roc(labels, predictions_list[[i]])
-          plot(roc_plot, add = T, col = "purple")
+          assertthat::are_equal(length(labels), length(pred_basic[[i]]))
+          roc_plot <- pROC::roc(labels, pred_basic[[i]][[1]][,1])
+          plot(roc_plot, add = T, col = colorPal[i])
         }
       }
+      legend("topright", title="Model Type", legend=names(object$model_list),
+             col=colorPal, lty=1:2, cex=0.8)
     }
   }
-}
 
 #' This function predict on many different machine learning models
 #' @param trainingSet the dataset to be trained on
@@ -55,14 +78,29 @@ predict.ModelComparison <- function(object, new_data) {
   i = 0
   if (object$.multi_class) {
     # do something TODO
-    for (model in object.modelList) {
+    print(object$model_list)
+    for (model in object$model_list) {
       i = i + 1
     }
   } else {
-    for (model in object.modelList) {
+    for (model in object$model_list) {
+      print("The model name is")
+      print(model)
+      print("DONE WITH MODEL NAME")
       i = i + 1
       if (!is.null(model)) {
-        predictions_list[[i]] <- predict(model, newdata = new_data, type="raw")
+        # use a regular expression - SVM's have to have special code to get probablities
+        if (stringr::str_detect(model, "Support Vector Machine")) {
+          pred_vals = predict(model, newdata = data.frame(new_data), type="prob")
+          print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")
+          print(pred_vals)
+          pred_vals <- as.array(pred_vals)
+          pred_vals <- attr(pred_vals, "probabilities")
+          predictions_list[[i]] <- as.vector(pred_vals)
+          print(pred_vals)
+        } else {
+          predictions_list[[i]] <- predict(model, newdata = data.frame(new_data), type="raw")
+        }
       }
     }
   }
@@ -99,16 +137,16 @@ getModelComparisons <-function(trainingSet,training_classes_input, validation="8
     training_classes <- training_classes_input[trainIndex]
     testing_classes <- training_classes_input[-trainIndex]
     # we will take care of the validation
-    trctrl <- caret::trainControl(method = "none", savePredictions = T)
+    trctrl <- caret::trainControl(method = "none", savePredictions = T, classProbs =  TRUE)
   } else {
     # we don't need a specific testing set
     training_data = trainingSet
     testing_data <- trainingSet
     testing_classes <- training_classes
     if (validation == "cv") {
-      trctrl <- caret::trainControl(method = "cv", savePredictions = T)
+      trctrl <- caret::trainControl(method = "cv", savePredictions = T, classProbs=TRUE)
     } else {
-      trctrl <- caret::trainControl(method = "none", savePredictions = T)
+      trctrl <- caret::trainControl(method = "none", savePredictions = T, classProbs=TRUE)
     }
   }
 
@@ -125,7 +163,10 @@ getModelComparisons <-function(trainingSet,training_classes_input, validation="8
                              preProcess = c("center", "scale"),
                              tuneLength = tune_length)
 
-  glmnet <- caret::train(training_data, as.factor(training_classes), method = "glmnet",
+  train <- data.frame(training_data, training_classes)
+  x.m <- model.matrix( ~.+0, training_data)
+  print(head(x.m))
+  glmnet <- caret::train(x.m, training_classes,  method = "glmnet",
                             trControl=trctrl,
                             preProcess = c("center", "scale"),
                             tuneLength = tune_length)
