@@ -26,45 +26,40 @@ ModelComparison <- function(ModelList, multi_class) {
 #' @export
 #' @examples
 #' plot()
-plot.ModelComparison <- function(object, labels,x.values) {
-  print("In function")
-  print(object$model_list)
-  print(str(x.values))
-  print("done")
-  # if (object$.multiclass) {
-  #   # do stuff later
-  #   print("IS MULTICLASS")
-  # } else {
-    print("Before predict")
-    pred_basic <- predict(object$model_list, newdata=x.values, type="prob")
-    print(pred_basic)
-    print("predicted")
-    print(length(pred_basic))
-    i = 0
-    colorPal = rainbow(length(object$model_list))
-    for (model in object$model_list) {
-      i = i + 1
-      if (!is.null(model)) {
-        if (i == 1) {
-          # do this to init the plot
-          assertthat::are_equal(length(labels), length(pred_basic[[i]]))
-          print(labels)
-          print(class(pred_basic[[i]][[1]][,1]))
-          print((pred_basic[[i]][[1]][,1]))
-
-          print(str(labels))
-          roc_plot <- pROC::roc(labels, pred_basic[[i]][[1]][,1])
-          plot(roc_plot, col = colorPal[i], title="ROC Comparison")
-        } else {
-          assertthat::are_equal(length(labels), length(pred_basic[[i]]))
-          roc_plot <- pROC::roc(labels, pred_basic[[i]][[1]][,1])
-          plot(roc_plot, add = T, col = colorPal[i])
-        }
+plot.ModelComparison <- function(object, training_data, labels, predictions="empty") {
+  print("In plotting function")
+  if (object$.multi_class == TRUE) {
+    # do stuff later
+    print("IS MULTICLASS")
+  } else {
+      if (predictions == "empty") {
+        # predictions somehow failed to happen - predict in here
+        pred_basic <- predict(object$model_list, newdata=training_data, type="prob")
+      } else {
+        # use the given predictions
+        pred_basic = predictions
       }
+      i = 0
+      colorPal = rainbow(length(object$model_list))
+      for (model in object$model_list) {
+        i = i + 1
+        if (!is.null(model)) {
+          if (i == 1) {
+              # do this to init the plot - for the first model
+              assertthat::are_equal(length(labels), length(pred_basic[[i]]))
+              roc_plot <- pROC::roc(labels, pred_basic[[i]][[1]][,1])
+              plot(roc_plot, col = colorPal[i], title="ROC Comparison")
+          } else {
+              assertthat::are_equal(length(labels), length(pred_basic[[i]]))
+              roc_plot <- pROC::roc(labels, pred_basic[[i]][[1]][,1])
+              plot(roc_plot, add = T, col = colorPal[i])
+          }
+        }
       legend("topright", title="Model Type", legend=names(object$model_list),
-             col=colorPal, lty=1:2, cex=0.8)
+               col=colorPal, lty=1:2, cex=0.8)
     }
   }
+}
 
 #' This function predict on many different machine learning models
 #' @param trainingSet the dataset to be trained on
@@ -73,42 +68,25 @@ plot.ModelComparison <- function(object, labels,x.values) {
 #' @export
 #' @examples
 #' predict()
-predict.ModelComparison <- function(object, new_data) {
+predict.ModelComparison <- function(object, training_data) {
+  print("I am predicting function")
   predictions_list = list()
   i = 0
   if (object$.multi_class) {
     # do something TODO
-    print(object$model_list)
+    print("IT is MULTICLASS")
     for (model in object$model_list) {
       i = i + 1
     }
   } else {
-    for (model in object$model_list) {
-      print("The model name is")
-      print(model)
-      print("DONE WITH MODEL NAME")
-      i = i + 1
-      if (!is.null(model)) {
-        # use a regular expression - SVM's have to have special code to get probablities
-        if (stringr::str_detect(model, "Support Vector Machine")) {
-          pred_vals = predict(model, newdata = data.frame(new_data), type="prob")
-          print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")
-          print(pred_vals)
-          pred_vals <- as.array(pred_vals)
-          pred_vals <- attr(pred_vals, "probabilities")
-          predictions_list[[i]] <- as.vector(pred_vals)
-          print(pred_vals)
-        } else {
-          predictions_list[[i]] <- predict(model, newdata = data.frame(new_data), type="raw")
-        }
-      }
-    }
+    # predict over the list of models
+    pred_basic <- predict(object$model_list, newdata=training_data, type="prob")
+    print("Dimensions are")
+    print(dim(pred_basic))
+    print(length(pred_basic[0]))
+    return(pred_basic)
   }
-  return(predictions_list)
 }
-
-
-
 
 
 #' This function evalutates many different machine learning models and returns those models with comparison charts
@@ -163,9 +141,10 @@ getModelComparisons <-function(trainingSet,training_classes_input, validation="8
                              preProcess = c("center", "scale"),
                              tuneLength = tune_length)
 
+  # prepare data for a GLMNET
   train <- data.frame(training_data, training_classes)
   x.m <- model.matrix( ~.+0, training_data)
-  print(head(x.m))
+  #print(head(x.m))
   glmnet <- caret::train(x.m, training_classes,  method = "glmnet",
                             trControl=trctrl,
                             preProcess = c("center", "scale"),
@@ -242,4 +221,26 @@ getModelComparisons <-function(trainingSet,training_classes_input, validation="8
 #   #      col = c("blue", "red", "green", "purple"), lty = c(1), ncol = 1, text.font = 4, box.lty = 0)
 #
 #   return(plotsToReturn)
+# }
+
+
+# for (model in object$model_list) {
+#   print("The model name is")
+#   print(model)
+#   print("DONE WITH MODEL NAME")
+#   i = i + 1
+#   if (!is.null(model)) {
+#     # use a regular expression - SVM's have to have special code to get probablities
+#     if (stringr::str_detect(model, "Support Vector Machine")) {
+#       pred_vals = predict(model, newdata = data.frame(new_data), type="prob")
+#       print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")
+#       print(pred_vals)
+#       pred_vals <- as.array(pred_vals)
+#       pred_vals <- attr(pred_vals, "probabilities")
+#       predictions_list[[i]] <- as.vector(pred_vals)
+#       print(pred_vals)
+#     } else {
+#       predictions_list[[i]] <- predict(model, newdata = data.frame(new_data), type="raw")
+#     }
+#   }
 # }
