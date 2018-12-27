@@ -88,6 +88,103 @@ predict.ModelComparison <- function(object, training_data) {
   }
 }
 
+prepData <- function(training_set) {
+    out <- tryCatch(
+      {
+        dmy <- caret::dummyVars(" ~ .", data = training_set)
+        training_set <- data.frame(predict(dmy, newdata = training_set))
+
+      },
+      error=function(cond) {
+        message(paste("Data set is not numeric or in one hot encoding.  Will try to convert", url))
+        message("Here's the original error message:")
+        message(cond)
+        # Choose a return value in case of error
+        return(NA)
+      },
+      warning=function(cond) {
+        message(paste("URL caused a warning:", url))
+        message("Here's the original warning message:")
+        message(cond)
+        # Choose a return value in case of warning
+        return(NULL)
+      },
+      finally={
+        # NOTE:
+        # Here goes everything that should be executed at the end,
+        # regardless of success or error.
+        # If you want more than one expression to be executed, then you
+        # need to wrap them in curly brackets ({...}); otherwise you could
+        # just have written 'finally=<expression>'
+        message(paste("Processed URL:", url))
+        message("Some other message at the end")
+      }
+    )
+  return(out)
+}
+
+
+buildModels <- function(training_data, training_classes, trctrl,
+                     tune_length, multi_class, force_prepared = F ) {
+  print("I am in getModels")
+  out <- tryCatch(
+    {
+      svmLinear <- caret::train(training_data, training_classes, method = "svmLinear",
+                                trControl=trctrl,
+                                preProcess = c("center", "scale"),
+                                tuneLength = tune_length)
+
+      neuralNet <- caret::train(training_data, training_classes, method = "nnet",
+                                trControl=trctrl,
+                                preProcess = c("center", "scale"),
+                                tuneLength = tune_length)
+
+      # prepare data for a GLMNET
+      train <- data.frame(training_data, training_classes)
+      x.m <- model.matrix( ~.+0, training_data)
+      #print(head(x.m))
+      glmnet <- caret::train(x.m, training_classes,  method = "glmnet",
+                             trControl=trctrl,
+                             preProcess = c("center", "scale"),
+                             tuneLength = tune_length)
+
+
+      randomForest <- caret::train(training_data, training_classes, method = "rf",
+                                   trControl=trctrl,
+                                   preProcess = c("center", "scale"),
+                                   tuneLength = tune_length)
+
+      if (!multi_class) {
+
+        glm_model <- caret::train(training_data, as.factor(training_classes), method = "glm",
+                                  trControl=trctrl,
+                                  preProcess = c("center", "scale"),
+                                  tuneLength = tune_length)
+      } else {
+        glm_model = NULL
+      }
+
+      print("Done Processing")
+
+      # get the visuals for all the models
+      modelVec = list(svmLinear, neuralNet, glmnet, randomForest, glm_model)
+      return(modelVec)
+
+    },
+    error=function(cond) {
+      if (force_prepared) {
+        message("Forced conversion to one hot encoding did not work - convert and try again")
+      } else {
+        message("Error in building models: ")
+        message(cond)
+      }
+      # Choose a return value in case of error
+      return(NA)
+    }
+  )
+  return(out)
+}
+
 
 #' This function evalutates many different machine learning models and returns those models with comparison charts
 #' @param trainingSet the dataset to be trained on
@@ -96,8 +193,19 @@ predict.ModelComparison <- function(object, training_data) {
 #' @export
 #' @examples
 #' getModelComparisons()
-getModelComparisons <-function(trainingSet,training_classes_input, validation="80/20", modelList=NULL, dataSetSize="small") {
+getModelComparisons <-function(trainingSet, training_classes_input, validation="80/20", modelList=NULL, dataSetSize="small") {
   print("In Function")
+
+  # check to see if function is good
+  is_prepped <- sapply(trainingSet, function(x) (is.numeric(x) || length(levels(x)) <= 2))
+
+  # Data is not in one hot encoding - try to do it
+  if (sum(is_prepped) != ncol(trainingSet)) {
+    prepData(trainingSet)
+    forced_prepared = T
+  } else {
+    forced_prepared = F
+  }
 
   # prep the data if not already a factor
   training_classes_input = as.factor(training_classes_input)
@@ -131,45 +239,9 @@ getModelComparisons <-function(trainingSet,training_classes_input, validation="8
   print("validation method complete")
   tune_length = 1
 
-  svmLinear <- caret::train(training_data, training_classes, method = "svmLinear",
-                      trControl=trctrl,
-                      preProcess = c("center", "scale"),
-                      tuneLength = tune_length)
+  modelVec = buildModels(training_data, training_classes, trctrl,
+                       tune_length, multi_class, force_prepared = forced_prepared)
 
-  neuralNet <- caret::train(training_data, training_classes, method = "nnet",
-                             trControl=trctrl,
-                             preProcess = c("center", "scale"),
-                             tuneLength = tune_length)
-
-  # prepare data for a GLMNET
-  train <- data.frame(training_data, training_classes)
-  x.m <- model.matrix( ~.+0, training_data)
-  #print(head(x.m))
-  glmnet <- caret::train(x.m, training_classes,  method = "glmnet",
-                            trControl=trctrl,
-                            preProcess = c("center", "scale"),
-                            tuneLength = tune_length)
-
-
-  randomForest <- caret::train(training_data, training_classes, method = "rf",
-                            trControl=trctrl,
-                            preProcess = c("center", "scale"),
-                            tuneLength = tune_length)
-
-  if (!multi_class) {
-
-      glm_model <- caret::train(training_data, as.factor(training_classes), method = "glm",
-                                trControl=trctrl,
-                                preProcess = c("center", "scale"),
-                                tuneLength = tune_length)
-  } else {
-    glm_model = NULL
-  }
-
-  print("Done Processing")
-
-  # get the visuals for all the models
-  modelVec = list(svmLinear, neuralNet, glmnet, randomForest, glm_model)
   names(modelVec) <- c("svmLinear", "neuralNet", "glmnet", "randomForest", "glm")
   modelComp <- ModelComparison(modelVec, multi_class)
   return(modelComp)
