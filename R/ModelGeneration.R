@@ -1,5 +1,5 @@
 #' ModelComparisons()
-ModelComparison <- function(ModelList, multi_class) {
+ModelComparison <- function(ModelList, multi_class, force_prepped) {
   # we can add our own integrity checks
   comparison <- "Model Comparison Object"
   model_list <- list(svmLinear = ModelList["svmLinear"],
@@ -10,8 +10,8 @@ ModelComparison <- function(ModelList, multi_class) {
   print("HERE in end")
   # class can be set using class() or attr() function
   comparison$model_list <- model_list
+  comparison$force_prepared = force_prepped
   comparison$.multi_class <- multi_class
-  print(comparison)
   print(multi_class)
   print(comparison$.multi_class)
   class(comparison) <- "ModelComparison"
@@ -27,6 +27,14 @@ ModelComparison <- function(ModelList, multi_class) {
 #' @examples
 #' plot()
 plot.ModelComparison <- function(object, training_data, labels, predictions="empty") {
+  # check to see if the training_data hasn't been prepped and if it was trained on prepped data
+  is_prepped <- sapply(training_data, function(x) (is.numeric(x) || length(levels(x)) <= 2))
+
+  if (object$force_prepared || sum(is_prepped) != ncol(training_data)) {
+    # Data is not in one hot encoding - try to do it
+    training_data = prepData(training_data)
+  }
+
   print("In plotting function")
   if (object$.multi_class == TRUE) {
     # do stuff later
@@ -34,6 +42,8 @@ plot.ModelComparison <- function(object, training_data, labels, predictions="emp
   } else {
       if (predictions == "empty") {
         # predictions somehow failed to happen - predict in here
+        print("predictions are emtpy")
+        print(object$model_list)
         pred_basic <- predict(object$model_list, newdata=training_data, type="prob")
       } else {
         # use the given predictions
@@ -93,7 +103,7 @@ prepData <- function(training_set) {
       {
         dmy <- caret::dummyVars(" ~ .", data = training_set)
         training_set <- data.frame(predict(dmy, newdata = training_set))
-
+        return(training_set)
       },
       error=function(cond) {
         message(paste("Data set is not numeric or in one hot encoding.  Will try to convert", url))
@@ -101,23 +111,6 @@ prepData <- function(training_set) {
         message(cond)
         # Choose a return value in case of error
         return(NA)
-      },
-      warning=function(cond) {
-        message(paste("URL caused a warning:", url))
-        message("Here's the original warning message:")
-        message(cond)
-        # Choose a return value in case of warning
-        return(NULL)
-      },
-      finally={
-        # NOTE:
-        # Here goes everything that should be executed at the end,
-        # regardless of success or error.
-        # If you want more than one expression to be executed, then you
-        # need to wrap them in curly brackets ({...}); otherwise you could
-        # just have written 'finally=<expression>'
-        message(paste("Processed URL:", url))
-        message("Some other message at the end")
       }
     )
   return(out)
@@ -126,7 +119,7 @@ prepData <- function(training_set) {
 
 buildModels <- function(training_data, training_classes, trctrl,
                      tune_length, multi_class, force_prepared = F ) {
-  print("I am in getModels")
+  print("I am in buildModels")
   out <- tryCatch(
     {
       svmLinear <- caret::train(training_data, training_classes, method = "svmLinear",
@@ -174,6 +167,7 @@ buildModels <- function(training_data, training_classes, trctrl,
     error=function(cond) {
       if (force_prepared) {
         message("Forced conversion to one hot encoding did not work - convert and try again")
+        message(cond)
       } else {
         message("Error in building models: ")
         message(cond)
@@ -201,7 +195,7 @@ getModelComparisons <-function(trainingSet, training_classes_input, validation="
 
   # Data is not in one hot encoding - try to do it
   if (sum(is_prepped) != ncol(trainingSet)) {
-    prepData(trainingSet)
+    trainingSet = prepData(trainingSet)
     forced_prepared = T
   } else {
     forced_prepared = F
@@ -241,9 +235,9 @@ getModelComparisons <-function(trainingSet, training_classes_input, validation="
 
   modelVec = buildModels(training_data, training_classes, trctrl,
                        tune_length, multi_class, force_prepared = forced_prepared)
-
+  print(modelVec)
   names(modelVec) <- c("svmLinear", "neuralNet", "glmnet", "randomForest", "glm")
-  modelComp <- ModelComparison(modelVec, multi_class)
+  modelComp <- ModelComparison(modelVec, multi_class, forced_prepared)
   return(modelComp)
 
 }
