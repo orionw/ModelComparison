@@ -7,7 +7,7 @@ ModelComparison <- function(ModelList, multi_class) {
                 glmnet = ModelList["glmnet"],
                 randomForest = ModelList["randomForest"],
                 glm = ModelList["glm"])
-
+  print("HERE in end")
   # class can be set using class() or attr() function
   comparison$model_list <- model_list
   comparison$.multi_class <- multi_class
@@ -46,7 +46,7 @@ plot.ModelComparison <- function(object, training_data, labels, predictions="emp
         if (!is.null(model)) {
           if (i == 1) {
               # do this to init the plot - for the first model
-              assertthat::are_equal(length(labels), length(pred_basic[[i]]))
+              assertthat::are_equal(length(labels), length(pred_basic[[i]][[1]][,1]))
               roc_plot <- pROC::roc(labels, pred_basic[[i]][[1]][,1])
               plot(roc_plot, col = colorPal[i], title="ROC Comparison")
           } else {

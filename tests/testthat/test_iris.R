@@ -5,6 +5,7 @@ library(mlbench)
 library(plyr)
 library(ggplot2)
 library(BestModel)
+library(caret)
 
 # helper function for a 2 response iris dataset
 prepare_iris <- function() {
@@ -62,13 +63,40 @@ test_that("MVP on more complex dataset", {
   plot(ion, x.val, Ionosphere$Class)
 })
 
+prepare_categorical_breast_cancer <- function() {
+  data(BreastCancer)
+  # remove NA rows
+  BreastCancer <- na.omit(BreastCancer)
+  BreastCancer = BreastCancer[complete.cases(BreastCancer), ]
+  breast.cancer.y = BreastCancer$Class
+  # No NA's
+  assertthat::are_equal(0, sum(is.na(BreastCancer)))
+  # remove the class predictions
+  BreastCancer = BreastCancer[,-length(BreastCancer)]
+  # Remove ID column
+  BreastCancer = BreastCancer[,-1]
+}
+
 test_that("Categorical Data given in one hot encoding", {
-  # TODO
+  ###### Start by encoding in one hot #########
+  prepare_categorical_breast_cancer()
+  # one hot encode the data
+  dmy <- caret::dummyVars(" ~ .", data = BreastCancer)
+  breast.cancer.x <- data.frame(predict(dmy, newdata = BreastCancer))
+
+  #######  use BestModel on the categorical data  ######
+  cancer <- getModelComparisons(breast.cancer.x, breast.cancer.y)
+  plot(cancer, breast.cancer.x, breast.cancer.y)
 })
 
 test_that("Categorical Data not given in one hot encoding", {
+  ## Give dataset not in one-hot encoding
   # give warning that we are attempting to convert
-  # TODO
+  prepare_categorical_breast_cancer()
+
+  #######  use BestModel on the categorical data  ######
+  cancer <- getModelComparisons(breast.cancer.x, breast.cancer.y)
+  plot(cancer, breast.cancer.x, breast.cancer.y)
 })
 
 #
