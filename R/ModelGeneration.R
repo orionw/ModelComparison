@@ -1,12 +1,17 @@
 #' ModelComparisons()
-ModelComparison <- function(ModelList, multi_class, force_prepped) {
+ModelComparison <- function(ModelList, multi_class, force_prepped, diff_names="none") {
   # we can add our own integrity checks
   comparison <- "Model Comparison Object"
-  model_list <- list(svmLinear = ModelList["svmLinear"],
-                neuralNet = ModelList["neuralNet"],
-                glmnet = ModelList["glmnet"],
-                randomForest = ModelList["randomForest"],
-                glm = ModelList["glm"])
+  if (diff_names == "none") {
+    model_list <- list(svmLinear = ModelList[["svmLinear"]],
+                  neuralNet = ModelList[["neuralNet"]],
+                  glmnet = ModelList[["glmnet"]],
+                  randomForest = ModelList[["randomForest"]],
+                  glm = ModelList[["glm"]])
+  } else {
+    model_list = ModelList
+    names(model_list) <- diff_names
+  }
   print("HERE in end")
   # class can be set using class() or attr() function
   comparison$model_list <- model_list
@@ -43,7 +48,6 @@ plot.ModelComparison <- function(object, training_data, labels, predictions="emp
       if (predictions == "empty") {
         # predictions somehow failed to happen - predict in here
         print("predictions are emtpy")
-        print(object$model_list)
         pred_basic <- predict(object$model_list, newdata=training_data, type="prob")
       } else {
         # use the given predictions
@@ -56,12 +60,12 @@ plot.ModelComparison <- function(object, training_data, labels, predictions="emp
         if (!is.null(model)) {
           if (i == 1) {
               # do this to init the plot - for the first model
-              assertthat::are_equal(length(labels), length(pred_basic[[i]][[1]][,1]))
-              roc_plot <- pROC::roc(labels, pred_basic[[i]][[1]][,1])
+              assertthat::are_equal(length(labels), length(pred_basic[[i]][,1]))
+              roc_plot <- pROC::roc(labels, pred_basic[[i]][,1])
               plot(roc_plot, col = colorPal[i], title="ROC Comparison")
           } else {
               assertthat::are_equal(length(labels), length(pred_basic[[i]]))
-              roc_plot <- pROC::roc(labels, pred_basic[[i]][[1]][,1])
+              roc_plot <- pROC::roc(labels, pred_basic[[i]][,1])
               plot(roc_plot, add = T, col = colorPal[i])
           }
         }
@@ -235,7 +239,6 @@ getModelComparisons <-function(trainingSet, training_classes_input, validation="
 
   modelVec = buildModels(training_data, training_classes, trctrl,
                        tune_length, multi_class, force_prepared = forced_prepared)
-  print(modelVec)
   names(modelVec) <- c("svmLinear", "neuralNet", "glmnet", "randomForest", "glm")
   modelComp <- ModelComparison(modelVec, multi_class, forced_prepared)
   return(modelComp)
@@ -243,70 +246,9 @@ getModelComparisons <-function(trainingSet, training_classes_input, validation="
 }
 
 
-
-
-# getROCGraph <- function(modelList, test_data,  labels, multi_class) {
-#   i = 1
-#   for (model in modelList) {
-#     if (!is.null(model)) {
-#       print(model)
-#       print(dim(test_data))
-#       preds <- predict(model, newdata = test_data, type="raw")
-#       print(length(preds))
-#       print("Pred done")
-#       if (multi_class) {
-#         assign(paste("roc.",i, sep=""), pROC::multiclass.roc(labels, as.numeric(preds)))
-#         print(paste("roc.",i, sep=""))
-#       } else {
-#         assign(paste("roc.",i, sep=""), pROC::roc(labels, as.numeric(preds)))
-#         print(paste("roc.",i), sep = "")
-#       }
-#       i = i + 1
-#     }
-#   }
-#
-#   i = i -1
-#   ################# see plot(a$ROCs[2][1][[1]]) ################
-#
-#   #Plot ROC curves side by side
-#   plotsToReturn <- vector(mode = "list", i-1)
-#   if (multi_class) {
-#     for (count in 1:i) {
-#       # adjust for the first one being outside the loop
-#       rs <- get(paste("roc.", count, sep=""))[['rocs']]
-#       plotsToReturn[[count]] <- pROC::roc(rs[[1]])
-#     }
-#   } else {
-#     for (count in 1:i) {
-#       # Do regular ROC here
-#       plotsToReturn[[count]] = get(paste("roc.", count, sep=""))
-#     }
-#   }
-#
-#   #legend("bottomright",legend = c("Two-Factor (0.5825)","Full GLM (0.6841)", "SVM1 (0.7553)", "*SVM validate1 (0.7581)", "Neural Net (.8242)"), cex = .7,
-#   #      col = c("blue", "red", "green", "purple"), lty = c(1), ncol = 1, text.font = 4, box.lty = 0)
-#
-#   return(plotsToReturn)
-# }
-
-
-# for (model in object$model_list) {
-#   print("The model name is")
-#   print(model)
-#   print("DONE WITH MODEL NAME")
-#   i = i + 1
-#   if (!is.null(model)) {
-#     # use a regular expression - SVM's have to have special code to get probablities
-#     if (stringr::str_detect(model, "Support Vector Machine")) {
-#       pred_vals = predict(model, newdata = data.frame(new_data), type="prob")
-#       print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")
-#       print(pred_vals)
-#       pred_vals <- as.array(pred_vals)
-#       pred_vals <- attr(pred_vals, "probabilities")
-#       predictions_list[[i]] <- as.vector(pred_vals)
-#       print(pred_vals)
-#     } else {
-#       predictions_list[[i]] <- predict(model, newdata = data.frame(new_data), type="raw")
-#     }
-#   }
-# }
+convertToComparison <- function(model_list, multi_class) {
+  if (anyNA(model_list) || anyNA(names(model_list))) {
+    stop("One of the models or model names is NA.  Please fix that and try again")
+  }
+  return (ModelComparison(model_list, multi_class, F, names(model_list)))
+}
