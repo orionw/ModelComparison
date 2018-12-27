@@ -75,24 +75,30 @@ prepare_categorical_breast_cancer <- function() {
   BreastCancer = BreastCancer[,-length(BreastCancer)]
   # Remove ID column
   BreastCancer = BreastCancer[,-1]
+  return(list(BreastCancer, breast.cancer.y))
 }
 
 test_that("Categorical Data given in one hot encoding", {
   ###### Start by encoding in one hot #########
-  prepare_categorical_breast_cancer()
+  df.list <- prepare_categorical_breast_cancer()
+  breast.cancer.x = df.list[[1]]
+  breast.cancer.y = df.list[[2]]
   # one hot encode the data
-  dmy <- caret::dummyVars(" ~ .", data = BreastCancer)
-  breast.cancer.x <- data.frame(predict(dmy, newdata = BreastCancer))
+  dmy <- caret::dummyVars(" ~ .", data = breast.cancer.x)
+  breast.cancer.x <- data.frame(predict(dmy, newdata = breast.cancer.x))
 
   #######  use BestModel on the categorical data  ######
   cancer <- getModelComparisons(breast.cancer.x, breast.cancer.y)
   plot(cancer, breast.cancer.x, breast.cancer.y)
 })
 
+
 test_that("Categorical Data not given in one hot encoding", {
   ## Give dataset not in one-hot encoding
   # give warning that we are attempting to convert
-  prepare_categorical_breast_cancer()
+  df.list <- prepare_categorical_breast_cancer()
+  breast.cancer.x = df.list[[1]]
+  breast.cancer.y = df.list[[2]]
 
   #######  use BestModel on the categorical data  ######
   cancer <- getModelComparisons(breast.cancer.x, breast.cancer.y)
