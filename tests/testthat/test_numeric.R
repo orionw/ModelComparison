@@ -74,5 +74,6 @@ test_that("Convert a list of models and plot it", {
   names(different_list) <- c("Random", "Stuff", "To", "Check", "Errors")
   different_list = rev(different_list)
   # plot list of models and see if the conversion works
-  plot(convertToComparison(different_list, multi_class = F), iris_ready[,1:4], iris_ready[,5] )
+  comp_model = convertToComparison(different_list, multi_class = F)
+  plot(comp_model, iris_ready[,1:4], iris_ready[,5] )
 })

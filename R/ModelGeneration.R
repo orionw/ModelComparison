@@ -1,8 +1,8 @@
 #' ModelComparisons()
-ModelComparison <- function(ModelList, multi_class, force_prepped, diff_names="none") {
+ModelComparison <- function(ModelList, multi_class, force_prepped, diff_names=NULL) {
   # we can add our own integrity checks
   comparison <- list()
-  if (diff_names == "none") {
+  if (class(diff_names) == "NULL") {
     model_list <- list(svmLinear = ModelList[["svmLinear"]],
                   neuralNet = ModelList[["neuralNet"]],
                   glmnet = ModelList[["glmnet"]],
