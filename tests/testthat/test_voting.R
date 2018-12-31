@@ -18,7 +18,10 @@ test_that("Dataset predictions on Majority Vote", {
   iris_ready <- prepare_iris()
   # create the models
   comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
-  pred_list <- MajorityVote(predict(comp$model_list, iris_ready[,1:4]))
+  preds <- predict(comp, iris_ready[,1:4])
+  #TODO add strip predictions function here
+  print(preds)
+  pred_list <- MajorityVote(preds)
 })
 
 test_that("Dataset predictions on Majority Weight", {
