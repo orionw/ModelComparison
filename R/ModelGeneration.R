@@ -55,12 +55,12 @@ plot.ModelComparison <- function(object, training_data, labels, predictions="emp
         if (!is.null(model)) {
           if (i == 1) {
               # do this to init the plot - for the first model
-              assertthat::are_equal(length(labels), length(pred_basic[[i]][,1]))
-              roc_plot <- pROC::roc(labels, pred_basic[[i]][,1])
+              assertthat::are_equal(length(labels), length(pred_basic[[i]][, 1]))
+              roc_plot <- pROC::roc(labels, pred_basic[[i]][, 1])
               plot(roc_plot, col = colorPal[i], title="ROC Comparison")
           } else {
               assertthat::are_equal(length(labels), length(pred_basic[[i]]))
-              roc_plot <- pROC::roc(labels, pred_basic[[i]][,1])
+              roc_plot <- pROC::roc(labels, pred_basic[[i]][, 1])
               plot(roc_plot, add = T, col = colorPal[i])
           }
         }
