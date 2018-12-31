@@ -13,12 +13,38 @@ prepare_iris <- function() {
   return(irisReal)
 }
 
-test_that("Ensemble Creating MVP", {
+test_that("Ensemble weighting function with auto-weighting", {
   # prepare the dataset
   iris_ready <- prepare_iris()
   # create the models
   comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
-  ensem <- Ensemble(comp$model_list, "majorityWeight")
+  ensem <- Ensemble(comp$model_list, "majorityWeight", iris_ready[,1:4], iris_ready[,5])
+  ensem$weight.list
   expect_equal(class(ensem), "Ensemble")
   pred <- predict(ensem, iris_ready[, 1:4])
+  expect_equal(length(iris_ready[, 5]), length(pred))
+})
+
+test_that("Average weighting Ensemble", {
+  # prepare the dataset
+  iris_ready <- prepare_iris()
+  # create the models
+  comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
+  ensem <- Ensemble(comp$model_list, "averageVote")
+  ensem$weight.list
+  expect_equal(class(ensem), "Ensemble")
+  pred <- predict(ensem, iris_ready[, 1:4])
+  expect_equal(length(iris_ready[, 5]), length(pred))
+})
+
+test_that("Majority Vote Ensemble", {
+  # prepare the dataset
+  iris_ready <- prepare_iris()
+  # create the models
+  comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
+  ensem <- Ensemble(comp$model_list, "majorityVote")
+  ensem$weight.list
+  expect_equal(class(ensem), "Ensemble")
+  pred <- predict(ensem, iris_ready[, 1:4])
+  expect_equal(length(iris_ready[, 5]), length(pred))
 })

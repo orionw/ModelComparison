@@ -19,8 +19,6 @@ test_that("Dataset predictions on Majority Vote", {
   # create the models
   comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
   preds <- predict(comp, iris_ready[,1:4])
-  #TODO add strip predictions function here
-  print(preds)
   pred_list <- MajorityVote(preds)
 })
 
@@ -77,7 +75,7 @@ test_that("Verify Weighting Voting function", {
   list_of_preds <- list(pred1, pred2, pred3)
   weights = list(0.5, .25, .8)
   voted <- MajorityWeight(list_of_preds, weights)
-  expect_equal(voted, list(0.5775, 0.4975, 0.5775, 1, .4983))
+  expect_equal(voted, c(0.5775, 0.4975, 0.5775, 1, .4983))
 })
 
 test_that("Majority Weighting on NA's sends an error", {
@@ -96,7 +94,7 @@ test_that("Verify Average Voting function", {
   pred3 <- list(.1, 0, .1, .8, 0.001)
   list_of_preds <- list(pred1, pred2, pred3)
   voted <- AverageVote(list_of_preds)
-  expect_equal(voted, list(0.53, 1.49 / 3, 0.53, 2.29 / 3, 0.497))
+  expect_equal(voted, c(0.53, 1.49 / 3, 0.53, 2.29 / 3, 0.497))
 })
 
 test_that("Average Weighting on NA's sends an error", {
