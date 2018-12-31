@@ -31,7 +31,7 @@ predict.Ensemble <- function(object, testdata, voting_type="default") {
     # input overrides set voting type
   if (voting_type != "default") {
       if (voting_type == "majorityVote") {
-        return(as.factor(MajorityVote(preds)))
+        return(MajorityVote(preds))
     } else if (voting_type == "majorityWeight") {
       return(as.factor((MajorityWeight(preds, object$weight.list))))
     } else if (voting_type == "averageVote") {
@@ -71,7 +71,9 @@ MajorityVote <- function(list_of_predictions){
     }
     votesFinal[[i]] = (names(which.max(table(vote))))
   }
-  return(as.list(as.numeric(votesFinal)))
+  message(votesFinal)
+  message((as.list(as.numeric(votesFinal))))
+  return((as.numeric(votesFinal)))
 }
 
 MajorityWeight <- function(list_of_predictions, weight_list){
@@ -145,15 +147,21 @@ GetFactorEqual <- function(pred) {
 
 
 GetWeightsFromTestingSet <- function(ensemble, df.train, test.set, train.type) {
-  preds <- predict(ensemble, df.train, voting_type="majorityVote")
+  i = 0
+  preds = list(length = length(ensemble$models))
+  for (model in ensemble$models) {
+    i = i + 1
+    preds[[i]] <- predict(model, df.train, type="prob")
+  }
   weights <- list(length = length(ensemble$models))
   test.set <- GetFactorEqual(test.set)
   i = 0
   for (ind_pred in preds) {
     i = i + 1
     conf.matrix = confusionMatrix(test.set, as.factor(round(ind_pred[, 1])))
-    weights[[i]] = conf.matrix[train.type]
+    weights[[i]] = conf.matrix$byClass[train.type][[1]]
   }
+  return(weights)
 }
 
 GetModelWeights <- function(ensemble, weights, test.set, train.type) {
@@ -184,7 +192,7 @@ GetModelWeights <- function(ensemble, weights, test.set, train.type) {
 
 ## weights are either a list of numeric values, or a dataframe that will be used as
 ## a training set.
-Ensemble <- function(model_list, voting_type, weights = "none", test.set = "none", train.type = "Accuracy") {
+Ensemble <- function(model_list, voting_type, weights = "none", test.set = "none", train.type = "Balanced Accuracy") {
   ensemble <- list()
   class(ensemble) <- "Ensemble"
   ensemble$.voting_type = voting_type

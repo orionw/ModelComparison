@@ -52,7 +52,7 @@ test_that("Verify Majority Voting function", {
   pred5 <- list(0,1,0,1,0,1,0,1)
   list_of_preds <- list(pred1, pred2, pred3, pred4, pred5)
   voted <- MajorityVote(list_of_preds)
-  expect_equal(voted, list(0,1,0,1,0,1,0,1))
+  expect_equal(voted, c(0,1,0,1,0,1,0,1))
   })
 
 test_that("Majority Voting on NA's sends an error", {
