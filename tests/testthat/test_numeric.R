@@ -17,7 +17,7 @@ prepare_iris <- function() {
   return(irisReal)
 }
 
-test_that("retured object has the correct structure", {
+test_that("Retured object has the correct structure", {
   # prepare the dataset
   iris_ready <- prepare_iris()
   # create the models
@@ -42,7 +42,7 @@ test_that("Basic Iris Dataset - Minimum Viable Product", {
   # check that the lists are the same size
   for (item in pred_list) {
     # index into the list and then grab the first column
-    expect_equal(print(length(item[,1])), length(iris_ready$Species))
+    expect_equal((length(item[,1])), length(iris_ready$Species))
   }
   # check that there are the same number of predictions as there are models
   expect_equal(length(comp$model_list), length(pred_list))

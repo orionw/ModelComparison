@@ -19,7 +19,18 @@ test_that("Ensemble weighting function with auto-weighting", {
   # create the models
   comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
   ensem <- Ensemble(comp$model_list, "majorityWeight", iris_ready[,1:4], iris_ready[,5])
-  ensem$weight.list
+  expect_equal(length(ensem$weight.list), length(ensem$models))
+  expect_equal(class(ensem), "Ensemble")
+  pred <- predict(ensem, iris_ready[, 1:4])
+  expect_equal(length(iris_ready[, 5]), length(pred))
+})
+
+test_that("Ensemble weighting function with given weights", {
+  # prepare the dataset
+  iris_ready <- prepare_iris()
+  # create the models
+  comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
+  ensem <- Ensemble(comp$model_list, "majorityWeight", runif(n=length(comp$model_list), min=0, max=1))
   expect_equal(class(ensem), "Ensemble")
   pred <- predict(ensem, iris_ready[, 1:4])
   expect_equal(length(iris_ready[, 5]), length(pred))
@@ -31,7 +42,6 @@ test_that("Average weighting Ensemble", {
   # create the models
   comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
   ensem <- Ensemble(comp$model_list, "averageVote")
-  ensem$weight.list
   expect_equal(class(ensem), "Ensemble")
   pred <- predict(ensem, iris_ready[, 1:4])
   expect_equal(length(iris_ready[, 5]), length(pred))
@@ -43,8 +53,21 @@ test_that("Majority Vote Ensemble", {
   # create the models
   comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
   ensem <- Ensemble(comp$model_list, "majorityVote")
-  ensem$weight.list
   expect_equal(class(ensem), "Ensemble")
   pred <- predict(ensem, iris_ready[, 1:4])
   expect_equal(length(iris_ready[, 5]), length(pred))
 })
+
+test_that("Majority Vote Ensemble With only 2 models", {
+  # prepare the dataset
+  iris_ready <- prepare_iris()
+  # create the models
+  comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
+  models <- comp$model_list[c(F, F, T, T, F)]
+  ensem <- Ensemble(models, "majorityVote")
+  expect_equal(class(ensem), "Ensemble")
+  pred <- predict(ensem, iris_ready[, 1:4])
+  expect_equal(length(iris_ready[, 5]), length(pred))
+})
+
+
