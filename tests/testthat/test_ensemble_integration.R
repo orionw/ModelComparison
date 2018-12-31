@@ -23,6 +23,10 @@ test_that("Ensemble used in a ModelComparison", {
   # create the models
   comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
   ensem <- Ensemble(comp$model_list, "majorityWeight", iris_ready[,1:4], iris_ready[,5])
-  comp <- convertToComparison(list(ensem), F)
+  mlist <- list(ensem)
+  names(mlist) <- c("Ensemble")
+  comp <- convertToComparison(mlist, F)
+  expect_equal(class(comp), "ModelComparison")
+  # make sure plot works
   plot(comp, iris_ready[,1:4], iris_ready[, 5])
 })

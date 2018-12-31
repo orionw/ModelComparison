@@ -13,13 +13,13 @@ StripPredictions <- function(pred) {
   }
 }
 
-predict.Ensemble <- function(object, testdata, voting_type="default") {
+predict.Ensemble <- function(object, newdata, voting_type="default", ...) {
   preds <- list(length=length(object$models))
   # predict on list of models
   i = 0
   for (model in object$models) {
     i = i + 1
-    preds[[i]] <-  StripPredictions(predict(model, newdata = testdata, type="prob"))
+    preds[[i]] <-  StripPredictions(predict(model, newdata = newdata, type="prob"))
   }
 
     # input overrides set voting type
