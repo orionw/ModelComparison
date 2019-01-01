@@ -191,11 +191,11 @@ GetBuildFlags <- function(modelList) {
   build.svmlinear = FALSE
   build.neuralnet = FALSE
   # turn all to lowercase
-  sapply(modelList, tolower)
-  if (is.element(modelList, "fast")) {
+  modelList <- sapply(modelList, tolower)
+  if (sum(is.element(modelList, "fast"))) {
     build.glm = TRUE
     build.svmlinear = TRUE
-  } else if (is.element(modelList, "all")) {
+  } else if (sum(is.element(modelList, "all"))) {
     build.glm = TRUE
     build.svmlinear = TRUE
     build.svmradial = TRUE
@@ -203,35 +203,35 @@ GetBuildFlags <- function(modelList) {
     build.knn = TRUE
     build.glmnet = TRUE
     build.randomforest = TRUE
-  } else if (is.element(modelList, "expensive")) {
+  } else if (sum(is.element(modelList, "expensive"))) {
     build.svmradial = TRUE
     build.neuralnet = TRUE
     build.glmnet = TRUE
     build.randomforest = TRUE
   }
-  if (is.element(modelList, "neuralnet")) {
+  if (sum(is.element(modelList, "neuralnet"))) {
     build.neuralnet = TRUE
   }
-  if (is.element(modelList, "svmlinear")) {
+  if (sum(is.element(modelList, "svmlinear"))) {
     build.svmlinear = TRUE
   }
-  if (is.element(modelList, "svmradial")) {
+  if (sum(is.element(modelList, "svmradial"))) {
     build.svmradial = TRUE
   }
-  if (is.element(modelList, "knn")) {
+  if (sum(is.element(modelList, "knn"))) {
     build.knn = TRUE
   }
-  if (is.element(modelList, "randomforest")) {
+  if (sum(is.element(modelList, "randomforest"))) {
     build.randomforest = TRUE
   }
-  if (is.element(modelList, "glmnet")) {
+  if (sum(is.element(modelList, "glmnet"))) {
     build.glmnet = TRUE
   }
-  if (is.element(modelList, "glm")) {
+  if (sum(is.element(modelList, "glm"))) {
     build.glm = TRUE
   }
   # assign flags to vector
-  flag.vector <- vector( ,10)
+    flag.vector <- vector()
   flag.vector["glm"] = build.glm
   flag.vector["glmnet"] = build.glmnet
   flag.vector["randomforest"] = build.randomforest
