@@ -53,17 +53,18 @@ plot.ModelComparison <- function(object, training_data, labels, predictions="emp
       for (model in object$model_list) {
         i = i + 1
         if (!is.null(model)) {
+          # if given in dataframe format, reduce to vector
+          if (class(pred_basic[[i]]) == "data.frame") {
+            pred_basic[[i]] <- pred_basic[[i]][, 1]
+          }
           if (i == 1) {
               # do this to init the plot - for the first model
-              if (class(pred_basic[[i]]) == "data.frame") {
-                pred_basic[[i]] <- pred_basic[[i]][, 1]
-              }
               assertthat::are_equal(length(labels), length(pred_basic[[i]]))
               roc_plot <- pROC::roc(labels, pred_basic[[i]])
               plot(roc_plot, col = colorPal[i], title="ROC Comparison")
           } else {
               assertthat::are_equal(length(labels), length(pred_basic[[i]]))
-              roc_plot <- pROC::roc(labels, pred_basic[[i]][, 1])
+              roc_plot <- pROC::roc(labels, pred_basic[[i]])
               plot(roc_plot, add = T, col = colorPal[i])
           }
         }
@@ -116,7 +117,7 @@ prepData <- function(training_set) {
 
 
 buildModels <- function(training_data, training_classes, trctrl,
-                     tune_length, multi_class, force_prepared = F ) {
+                     tune_length, multi_class, build.flags, force_prepared = F ) {
   out <- tryCatch(
     {
       svmLinear <- caret::train(training_data, training_classes, method = "svmLinear",
@@ -177,6 +178,71 @@ buildModels <- function(training_data, training_classes, trctrl,
 }
 
 
+GetBuildFlags <- function(modelList) {
+  # Flags include:
+  # neuralnet, svmlinear, svmradial, knn, randomforest, glmnet, glm
+  # keywords include "fast", "all", "expensive"
+
+  build.glm = FALSE
+  build.glmnet = FALSE
+  build.randomforest = FALSE
+  build.knn = FALSE
+  build.svmradial = FALSE
+  build.svmlinear = FALSE
+  build.neuralnet = FALSE
+  # turn all to lowercase
+  sapply(modelList, tolower)
+  if (is.element(modelList, "fast")) {
+    build.glm = TRUE
+    build.svmlinear = TRUE
+  } else if (is.element(modelList, "all")) {
+    build.glm = TRUE
+    build.svmlinear = TRUE
+    build.svmradial = TRUE
+    build.neuralnet = TRUE
+    build.knn = TRUE
+    build.glmnet = TRUE
+    build.randomforest = TRUE
+  } else if (is.element(modelList, "expensive")) {
+    build.svmradial = TRUE
+    build.neuralnet = TRUE
+    build.glmnet = TRUE
+    build.randomforest = TRUE
+  }
+  if (is.element(modelList, "neuralnet")) {
+    build.neuralnet = TRUE
+  }
+  if (is.element(modelList, "svmlinear")) {
+    build.svmlinear = TRUE
+  }
+  if (is.element(modelList, "svmradial")) {
+    build.svmradial = TRUE
+  }
+  if (is.element(modelList, "knn")) {
+    build.knn = TRUE
+  }
+  if (is.element(modelList, "randomforest")) {
+    build.randomforest = TRUE
+  }
+  if (is.element(modelList, "glmnet")) {
+    build.glmnet = TRUE
+  }
+  if (is.element(modelList, "glm")) {
+    build.glm = TRUE
+  }
+  # assign flags to vector
+  flag.vector <- vector( ,10)
+  flag.vector["glm"] = build.glm
+  flag.vector["glmnet"] = build.glmnet
+  flag.vector["randomforest"] = build.randomforest
+  flag.vector["knn"] = build.knn
+  flag.vector["svmradial"] = build.svmradial
+  flag.vector["svmlinear"] = build.svmlinear
+  flag.vector["neuralnet"] = build.neuralnet
+  return(flag.vector)
+}
+
+
 #' This function evalutates many different machine learning models and returns those models with comparison charts
 #' @param trainingSet the dataset to be trained on
 #' @param trainingClasses the labels of the training set
@@ -184,7 +250,7 @@ buildModels <- function(training_data, training_classes, trctrl,
 #' @export
 #' @examples
 #' getModelComparisons()
-getModelComparisons <-function(trainingSet, training_classes_input, validation="80/20", modelList=NULL, dataSetSize="small") {
+getModelComparisons <-function(trainingSet, training_classes_input, validation="80/20", modelList="fast", dataSetSize="small") {
   # check to see if function is good
   is_prepped <- sapply(trainingSet, function(x) (is.numeric(x) || length(levels(x)) <= 2))
 
@@ -200,6 +266,8 @@ getModelComparisons <-function(trainingSet, training_classes_input, validation="
   training_classes_input = as.factor(training_classes_input)
   set.seed(sample(1:9999999, 1))
   multi_class = (nlevels(training_classes_input) > 2)
+
+  build.flags <- GetBuildFlags(modelList)
 
   # Get the method of validation and prepare testing and training sets
   if (validation == "80/20") {
@@ -229,7 +297,7 @@ getModelComparisons <-function(trainingSet, training_classes_input, validation="
   tune_length = 1
 
   modelVec = buildModels(training_data, training_classes, trctrl,
-                       tune_length, multi_class, force_prepared = forced_prepared)
+                       tune_length, multi_class, build.flags, force_prepared = forced_prepared)
   names(modelVec) <- c("svmLinear", "neuralNet", "glmnet", "randomForest", "glm")
   modelComp <- ModelComparison(modelVec, multi_class, forced_prepared)
   return(modelComp)

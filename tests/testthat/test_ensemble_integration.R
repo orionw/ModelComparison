@@ -22,11 +22,14 @@ test_that("Ensemble used in a ModelComparison", {
   iris_ready <- prepare_iris()
   # create the models
   comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
-  ensem <- Ensemble(comp$model_list, "majorityWeight", iris_ready[,1:4], iris_ready[,5])
-  mlist <- list(ensem)
-  names(mlist) <- c("Ensemble")
+  ensem1 <- Ensemble(comp$model_list, "majorityWeight", iris_ready[,1:4], iris_ready[,5])
+  ensem2 <- Ensemble(comp$model_list, "majorityVote")
+  ensem3 <- Ensemble(comp$model_list, "averageVote")
+  # put them in a named list for the comparison
+  mlist <- list(ensem1, ensem2, ensem3)
+  names(mlist) <- c("Ensemble1", "Ensemble2", "Ensemble3")
   comp <- convertToComparison(mlist, F)
   expect_equal(class(comp), "ModelComparison")
   # make sure plot works
-  plot(comp, iris_ready[,1:4], iris_ready[, 5])
+  print(plot(comp, iris_ready[,1:4], iris_ready[, 5]))
 })
