@@ -2,8 +2,6 @@ context("Input ModelComparison Functionality")
 
 # load the libraries
 library(BestModel)
-library(caret)
-
 
 ## Ouput is ordered in:
 #  glm glmnet randomforest knn svmradial svmlinear neuralnet
@@ -33,4 +31,10 @@ test_that("Model Building Flags Work", {
   all.names <- list("glm", "glmnet", "randomforest", "knn", "svmradial", "svmlinear", "neuralnet")
   individual <- GetBuildFlags(all.names)
   expect_equal(all, expect.all)
+})
+
+test_that("Model Building Works in General", {
+  # name and order of the results for model building
+  modelNames <- c("glm", "glmnet", "randomforest", "knn", "svmradial", "svmlinear", "neuralnet")
+
 })

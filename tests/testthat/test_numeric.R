@@ -68,10 +68,10 @@ test_that("Convert a list of models and plot it", {
   # prepare the dataset
   iris_ready <- prepare_iris()
   # create the models
-  comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
+  comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5], modelList="fast")
   # make a list of models and mix it up
   different_list = comp$model_list
-  names(different_list) <- c("Random", "Stuff", "To", "Check", "Errors")
+  names(different_list) <- c("Random", "Stuff")
   different_list = rev(different_list)
   # plot list of models and see if the conversion works
   comp_model = convertToComparison(different_list, multi_class = F)

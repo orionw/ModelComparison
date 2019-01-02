@@ -62,7 +62,7 @@ test_that("Majority Vote Ensemble With only 2 models", {
   # prepare the dataset
   iris_ready <- prepare_iris()
   # create the models
-  comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
+  comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5], modelList = "all")
   models <- comp$model_list[c(F, F, T, T, F)]
   ensem <- Ensemble(models, "majorityVote")
   expect_equal(class(ensem), "Ensemble")

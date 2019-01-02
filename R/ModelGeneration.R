@@ -1,15 +1,11 @@
 #' ModelComparisons()
-ModelComparison <- function(ModelList, multi_class, force_prepped, diff_names=NULL) {
+ModelComparison <- function(modelList, multi_class, force_prepped, diff_names=NULL) {
   # we can add our own integrity checks
   comparison <- list()
   if (class(diff_names) == "NULL") {
-    model_list <- list(svmLinear = ModelList[["svmLinear"]],
-                  neuralNet = ModelList[["neuralNet"]],
-                  glmnet = ModelList[["glmnet"]],
-                  randomForest = ModelList[["randomForest"]],
-                  glm = ModelList[["glm"]])
+    model_list = modelList
   } else {
-    model_list = ModelList
+    model_list = modelList
     names(model_list) <- diff_names
   }
   # give object its members
@@ -118,47 +114,63 @@ prepData <- function(training_set) {
 
 buildModels <- function(training_data, training_classes, trctrl,
                      tune_length, multi_class, build.flags, force_prepared = F ) {
+  modelVec <- list()
   out <- tryCatch(
     {
-      svmLinear <- caret::train(training_data, training_classes, method = "svmLinear",
-                                trControl=trctrl,
-                                preProcess = c("center", "scale"),
-                                tuneLength = tune_length)
-
-      # capture output to reduce the excessive output this package gives in training
-      capture.output(neuralNet <- caret::train(training_data, training_classes, method = "nnet",
-                                trControl=trctrl,
-                                preProcess = c("center", "scale"),
-                                tuneLength = tune_length))
-
-      # prepare data for a GLMNET
-      train <- data.frame(training_data, training_classes)
-      x.m <- model.matrix( ~.+0, training_data)
-      glmnet <- caret::train(x.m, training_classes,  method = "glmnet",
-                             trControl=trctrl,
-                             preProcess = c("center", "scale"),
-                             tuneLength = tune_length)
-
-
-      randomForest <- caret::train(training_data, training_classes, method = "rf",
-                                   trControl=trctrl,
-                                   preProcess = c("center", "scale"),
-                                   tuneLength = tune_length)
-
-      if (!multi_class) {
-
-        glm_model <- caret::train(training_data, as.factor(training_classes), method = "glm",
+      if (build.flags["svmlinear"]) {
+        svmLinear <- caret::train(training_data, training_classes, method = "svmLinear",
                                   trControl=trctrl,
                                   preProcess = c("center", "scale"),
                                   tuneLength = tune_length)
+
+        modelVec[["svmLinear"]] = svmLinear
+      }
+      if (build.flags["neuralnet"]) {
+        # capture output to reduce the excessive output this package gives in training
+        capture.output(neuralNet <- caret::train(training_data, training_classes, method = "nnet",
+                                  trControl=trctrl,
+                                  preProcess = c("center", "scale"),
+                                  tuneLength = tune_length))
+        modelVec[["neuralNet"]] = neuralNet
+      }
+
+      if (build.flags["glmnet"]) {
+        # prepare data for a GLMNET
+        train <- data.frame(training_data, training_classes)
+        x.m <- model.matrix( ~.+0, training_data)
+        glmnet <- caret::train(x.m, training_classes,  method = "glmnet",
+                               trControl=trctrl,
+                               preProcess = c("center", "scale"),
+                               tuneLength = tune_length)
+        modelVec[["glmnet"]] = glmnet
+
+      }
+
+      if (build.flags["randomforest"]) {
+        randomForest <- caret::train(training_data, training_classes, method = "rf",
+                                     trControl=trctrl,
+                                     preProcess = c("center", "scale"),
+                                     tuneLength = tune_length)
+        modelVec[["randomForest"]] = randomForest
+      }
+
+      if (!multi_class) {
+        if (build.flags["glm"]) {
+          glm_model <- caret::train(training_data, as.factor(training_classes), method = "glm",
+                                    trControl=trctrl,
+                                    preProcess = c("center", "scale"),
+                                    tuneLength = tune_length)
+          modelVec[["glm"]] = glm_model
+
+        }
       } else {
-        glm_model = NULL
+        if (build.flags["glm"]) {
+          glm_model = NULL
+          # TODO build a multiclass
+        }
       }
 
       message("Models are done building")
-
-      # get the visuals for all the models
-      modelVec = list(svmLinear, neuralNet, glmnet, randomForest, glm_model)
       return(modelVec)
 
     },
@@ -298,7 +310,6 @@ getModelComparisons <-function(trainingSet, training_classes_input, validation="
 
   modelVec = buildModels(training_data, training_classes, trctrl,
                        tune_length, multi_class, build.flags, force_prepared = forced_prepared)
-  names(modelVec) <- c("svmLinear", "neuralNet", "glmnet", "randomForest", "glm")
   modelComp <- ModelComparison(modelVec, multi_class, forced_prepared)
   return(modelComp)
 
