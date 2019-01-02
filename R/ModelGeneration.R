@@ -78,6 +78,18 @@ plot.ModelComparison <- function(object, training_data, labels, predictions="emp
 #' @examples
 #' predict()
 predict.ModelComparison <- function(object, training_data) {
+  # # check to see if function is good
+  # is_prepped <- sapply(training_data, function(x) (is.numeric(x) || length(levels(x)) <= 2))
+  #
+  # # Data is not in one hot encoding - try to do it
+  # if (sum(is_prepped) != ncol(training_data)) {
+  #   training_data = prepData(training_data)
+  #   forced_prepared = T
+  # } else {
+  #   forced_prepared = F
+  # }
+
+
   predictions_list = list()
   i = 0
   if (object$.multi_class) {
@@ -117,6 +129,7 @@ buildModels <- function(training_data, training_classes, trctrl,
   modelVec <- list()
   out <- tryCatch(
     {
+      message("Building...")
       if (build.flags["svmlinear"]) {
         svmLinear <- caret::train(training_data, training_classes, method = "svmLinear",
                                   trControl=trctrl,
@@ -256,9 +269,12 @@ GetBuildFlags <- function(modelList) {
 
 GetTrainingInfo <- function(trainingSet, training_classes_input, validation) {
   # Get the method of validation and prepare testing and training sets
-  if (validation == "80/20") {
+  split <- regmatches(validation, regexpr("[0-9][0-9]/[0-9][0-9]",validation))
+  if (!identical(split, character(0))) {
+    # take the first two characters and turn them into a percent
+    percent = as.numeric(substr(split, start = 1, stop = 2)) / 100
     # partition the data into training and testing data stratified by class
-    trainIndex <- caret::createDataPartition(training_classes_input, p=0.8, list=F)
+    trainIndex <- caret::createDataPartition(training_classes_input, p=percent, list=F)
     # get the dataframes
     training_data <- trainingSet[trainIndex,]
     testing_data <- trainingSet[-trainIndex,]
@@ -267,11 +283,12 @@ GetTrainingInfo <- function(trainingSet, training_classes_input, validation) {
     testing_classes <- training_classes_input[-trainIndex]
     # we will take care of the validation
     trctrl <- caret::trainControl(method = "none", savePredictions = T, classProbs =  TRUE)
+
   } else {
     # we don't need a specific testing set
     training_data = trainingSet
     testing_data <- trainingSet
-    testing_classes <- training_classes
+    training_classes <- training_classes_input
     if (validation == "cv") {
       trctrl <- caret::trainControl(method = "cv", savePredictions = T, classProbs=TRUE)
     } else {
@@ -310,10 +327,7 @@ getModelComparisons <-function(trainingSet, training_classes_input, validation="
   training_classes = training_info[[2]]
   trctrl = training_info[[3]]
 
-
   build.flags <- GetBuildFlags(modelList)
-
-
 
   message("Settings configured successfully")
   tune_length = 1

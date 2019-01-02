@@ -33,8 +33,3 @@ test_that("Model Building Flags Work", {
   expect_equal(all, expect.all)
 })
 
-# test_that("Model Building Works in General", {
-#   # name and order of the results for model building
-#   modelNames <- c("glm", "glmnet", "randomforest", "knn", "svmradial", "svmlinear", "neuralnet")
-#
-# })
