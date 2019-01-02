@@ -254,6 +254,32 @@ GetBuildFlags <- function(modelList) {
   return(flag.vector)
 }
 
+GetTrainingInfo <- function(trainingSet, training_classes_input, validation) {
+  # Get the method of validation and prepare testing and training sets
+  if (validation == "80/20") {
+    # partition the data into training and testing data stratified by class
+    trainIndex <- caret::createDataPartition(training_classes_input, p=0.8, list=F)
+    # get the dataframes
+    training_data <- trainingSet[trainIndex,]
+    testing_data <- trainingSet[-trainIndex,]
+    # get the labels
+    training_classes <- training_classes_input[trainIndex]
+    testing_classes <- training_classes_input[-trainIndex]
+    # we will take care of the validation
+    trctrl <- caret::trainControl(method = "none", savePredictions = T, classProbs =  TRUE)
+  } else {
+    # we don't need a specific testing set
+    training_data = trainingSet
+    testing_data <- trainingSet
+    testing_classes <- training_classes
+    if (validation == "cv") {
+      trctrl <- caret::trainControl(method = "cv", savePredictions = T, classProbs=TRUE)
+    } else {
+      trctrl <- caret::trainControl(method = "none", savePredictions = T, classProbs=TRUE)
+    }
+  }
+  return(list(training_data, training_classes, trctrl))
+}
 
 #' This function evalutates many different machine learning models and returns those models with comparison charts
 #' @param trainingSet the dataset to be trained on
@@ -279,31 +305,15 @@ getModelComparisons <-function(trainingSet, training_classes_input, validation="
   set.seed(sample(1:9999999, 1))
   multi_class = (nlevels(training_classes_input) > 2)
 
+  training_info <- GetTrainingInfo(trainingSet, training_classes_input, validation)
+  training_data = training_info[[1]]
+  training_classes = training_info[[2]]
+  trctrl = training_info[[3]]
+
+
   build.flags <- GetBuildFlags(modelList)
 
-  # Get the method of validation and prepare testing and training sets
-  if (validation == "80/20") {
-    # partition the data into training and testing data stratified by class
-    trainIndex <- caret::createDataPartition(training_classes_input, p=0.8, list=F)
-    # get the dataframes
-    training_data <- trainingSet[trainIndex,]
-    testing_data <- trainingSet[-trainIndex,]
-    # get the labels
-    training_classes <- training_classes_input[trainIndex]
-    testing_classes <- training_classes_input[-trainIndex]
-    # we will take care of the validation
-    trctrl <- caret::trainControl(method = "none", savePredictions = T, classProbs =  TRUE)
-  } else {
-    # we don't need a specific testing set
-    training_data = trainingSet
-    testing_data <- trainingSet
-    testing_classes <- training_classes
-    if (validation == "cv") {
-      trctrl <- caret::trainControl(method = "cv", savePredictions = T, classProbs=TRUE)
-    } else {
-      trctrl <- caret::trainControl(method = "none", savePredictions = T, classProbs=TRUE)
-    }
-  }
+
 
   message("Settings configured successfully")
   tune_length = 1
