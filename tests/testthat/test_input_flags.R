@@ -10,7 +10,7 @@ test_that("Model Building Flags Work", {
   modelNames <- c("glm", "glmnet", "randomforest", "knn", "svmradial", "svmlinear", "neuralnet")
 
   fast <- GetBuildFlags(list("fast", "SVMRadial"))
-  expected.fast <- c(T, F, F, F, T, T, F)
+  expected.fast <- c(F, T, F, F, T, T, F)
   # set names so that the vectors are equal
   names(expected.fast) <- modelNames
   expect_equal(fast, expected.fast)
@@ -33,8 +33,8 @@ test_that("Model Building Flags Work", {
   expect_equal(all, expect.all)
 })
 
-test_that("Model Building Works in General", {
-  # name and order of the results for model building
-  modelNames <- c("glm", "glmnet", "randomforest", "knn", "svmradial", "svmlinear", "neuralnet")
-
-})
+# test_that("Model Building Works in General", {
+#   # name and order of the results for model building
+#   modelNames <- c("glm", "glmnet", "randomforest", "knn", "svmradial", "svmlinear", "neuralnet")
+#
+# })

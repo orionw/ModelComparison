@@ -66,22 +66,22 @@ test_that("MVP on more complex dataset", {
   x.val = Ionosphere[,-length(Ionosphere)]
   # remove that categorical variables
   x.val = x.val[,c(-1, -2)]
-  # get comparisons
+  # get comparisons - warning occurs from too easy of data so suppress it for testing purposes
   ion <- getModelComparisons(x.val, Ionosphere$Class)
   plot(ion, x.val, Ionosphere$Class)
 })
 
 
-# test_that("Convert a list of models and plot it", {
-#   # prepare the dataset
-#   iris_ready <- prepare_iris()
-#   # create the models
-#   comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5], modelList="fast")
-#   # make a list of models and mix it up
-#   different_list = comp$model_list
-#   names(different_list) <- c("Random", "Stuff")
-#   different_list = rev(different_list)
-#   # plot list of models and see if the conversion works
-#   comp_model = convertToComparison(different_list, multi_class = F)
-#   plot(comp_model, iris_ready[,1:4], iris_ready[,5] )
-# })
+test_that("Convert a list of models and plot it", {
+  # prepare the dataset
+  iris_ready <- prepare_iris()
+  # create the models
+  comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5], modelList="fast")
+  # make a list of models and mix it up
+  different_list = comp$model_list
+  names(different_list) <- c("Random", "Stuff")
+  different_list = rev(different_list)
+  # plot list of models and see if the conversion works
+  comp_model = convertToComparison(different_list, multi_class = F)
+  plot(comp_model, iris_ready[,1:4], iris_ready[,5] )
+})

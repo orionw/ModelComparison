@@ -205,7 +205,7 @@ GetBuildFlags <- function(modelList) {
   # turn all to lowercase
   modelList <- sapply(modelList, tolower)
   if (sum(is.element(modelList, "fast"))) {
-    build.glm = TRUE
+    build.glmnet = TRUE
     build.svmlinear = TRUE
   } else if (sum(is.element(modelList, "all"))) {
     build.glm = TRUE

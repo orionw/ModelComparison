@@ -3,31 +3,32 @@ context("Voting and related functionality")
 # load the libraries
 library(BestModel)
 
-# helper function for a 2 response iris dataset
-prepare_iris <- function() {
-  data(iris)
-  toBeRemoved<-which(iris$Species=="setosa")
-  irisReal <-iris[-toBeRemoved,]
-  irisReal <- droplevels(irisReal)
-  levels(irisReal$Species) <- c('versicolor', 'virginica' )
-  return(irisReal)
+PrepareNumericTitanic <- function() {
+  titanic <- read.csv("~/BestModel/tests/testthat/titanic.csv")
+  titanic <- titanic[, c("Survived", "Age",
+                         "Siblings.Spouses.Aboard", "Parents.Children.Aboard", "Fare")]
+  titanic$Survived = as.factor(titanic$Survived)
+  levels(titanic$Survived) <- c("died", "survived")
+  return(titanic)
 }
 
 test_that("Dataset predictions on Majority Vote", {
   # prepare the dataset
-  iris_ready <- prepare_iris()
+  titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
-  preds <- predict(comp, iris_ready[,1:4])
-  pred_list <- MajorityVote(preds)
+  comp <- getModelComparisons(titanic[, -1], titanic[, 1])
+  # predict the values for the dataset
+  pred <- predict(comp, titanic[, -1])
+  pred_list <- MajorityVote(pred)
 })
 
 test_that("Dataset predictions on Majority Weight", {
   # prepare the dataset
-  iris_ready <- prepare_iris()
+  titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
-  pred <- predict(comp, iris_ready[,1:4])
+  comp <- getModelComparisons(titanic[, -1], titanic[, 1])
+  # predict the values for the dataset
+  pred <- predict(comp, titanic[, -1])
   # turn pred list of DF's into a real list of values
   pred <- StripPredictions(pred)
   pred_list <- MajorityWeight(pred, runif(n=length(comp$model_list), min=0, max=1))
@@ -35,10 +36,11 @@ test_that("Dataset predictions on Majority Weight", {
 
 test_that("Dataset predictions on Average Vote", {
   # prepare the dataset
-  iris_ready <- prepare_iris()
+  titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
-  pred <- predict(comp, iris_ready[,1:4])
+  comp <- getModelComparisons(titanic[, -1], titanic[, 1])
+  # predict the values for the dataset
+  pred <- predict(comp, titanic[, -1])
   # turn pred list of DF's into a real list of values
   pred <- StripPredictions(pred)
   pred_list <- AverageVote(pred)
