@@ -7,7 +7,7 @@
 #' @export
 #' @examples
 #' plot()
-plot.ModelComparison <- function(object, labels, training_data = "none", predictions="empty") {
+plot.ModelComparison <- function(object, labels, training_data = "none", predictions="empty", plot.type="ROC", ...) {
   # error check the arguments
   if (class(training_data) != "data.frame" && training_data == "none") {
         if (predictions == "empty") {
@@ -35,9 +35,78 @@ plot.ModelComparison <- function(object, labels, training_data = "none", predict
     pred_basic = predictions
   }
 
+  ## Plot the chosen type
+  if (plot.type == "ROC") {
+    CreateROCPlot(object, pred_basic, labels)
+  } else if (plot.type == "Accuracy") {
+    CreateAccuracyPlot(object, pred_basic, labels)
+  } else {
+    CreateMetricPlot(object, pred_basic, labels, plot.type) }
+}
 
+FlipPredictions <- function(pred) {
+  pred <- as.numeric(pred)
+  # scale to 1 and 0
+  pred <- pred - 1
+  # flip the signs to make correct
+  pred <- 1 - pred
+  return(as.factor(pred))
+}
+
+CreateMetricPlot <- function(object, pred_basic, labels, metric) {
+    metric.list = list()
+    i = 0
+    for (ind_pred in pred_basic) {
+      i = i + 1
+      pred <- as.factor(round(ind_pred[, 1]))
+      # predictions come out backwords, flip them
+      pred <- GetFactorEqual(pred)
+      # assign the correct labels
+      levels(pred) <- levels(labels)
+      conf.matrix = caret::confusionMatrix(labels, pred)
+      # grab the accuracy statistic
+
+      metric.val = conf.matrix$byClass[metric]
+      if (is.na(metric.val)) {
+        stop("plot.type is not a valid metric name. Please see the documentation for details.")
+      }
+      metric.list[[i]] = metric.val
+    }
+
+  # accuracy list was either created above or already existed - now plot
+  barplot(as.matrix(as.data.frame(metric.list)), names.arg=names(object$model_list),
+          ylim=c(0, 1), ylab='Percentage', col=rainbow(length(metric.list)),
+          xlab="Model Name", main=metric, beside = TRUE, space = c(0, 0.1))
+}
+
+CreateAccuracyPlot <- function(object, pred_basic, labels) {
+    # Use accuracy list to plot graph
+  if (is.null(object$accuracy.list)) {
+    accuracy.list = list()
+    i = 0
+    for (ind_pred in pred_basic) {
+      i = i + 1
+      pred <- as.factor(round(ind_pred[, 1]))
+      # predictions come out backwords, flip them
+      pred <- GetFactorEqual(pred)
+      # assign the correct labels
+      levels(pred) <- levels(labels)
+      conf.matrix = caret::confusionMatrix(labels, pred)
+      # grab the accuracy statistic
+      accuracy.list[[i]] = conf.matrix$overall["Accuracy"]
+    }
+    # this doesn't affect the object outside the function but it makes the code concise
+    object$accuracy.list = accuracy.list
+  }
+  # accuracy list was either created above or already existed - now plot
+  barplot(as.matrix(as.data.frame(object$accuracy.list)), names.arg=names(object$model_list),
+          ylim=c(0, 1), ylab='Accuracy Percentage', col=rainbow(length(object$accuracy.list)),
+          xlab="Model Name", main="Model Accuracy", beside = TRUE, space = c(0, 0.1))
+}
+
+CreateROCPlot <- function(object, pred_basic, labels) {
   if (object$.multi_class == TRUE) {
-    # do stuff later
+    # do stuff later TODO
     message("dataset is multi-class")
   } else {
     i = 0
