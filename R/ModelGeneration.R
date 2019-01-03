@@ -17,59 +17,6 @@ ModelComparison <- function(modelList, multi_class, force_prepped, diff_names=NU
   return(comparison)
 }
 
-#' This function evalutates many different machine learning models and returns those models with comparison charts
-#' @param trainingSet the dataset to be trained on
-#' @param trainingClasses the labels of the training set
-#' @keywords
-#' @export
-#' @examples
-#' plot()
-plot.ModelComparison <- function(object, training_data, labels, predictions="empty") {
-  # check to see if the training_data hasn't been prepped and if it was trained on prepped data
-  is_prepped <- sapply(training_data, function(x) (is.numeric(x) || length(levels(x)) <= 2))
-
-  if (object$force_prepared || sum(is_prepped) != ncol(training_data)) {
-    # Data is not in one hot encoding - try to do it
-    training_data = prepData(training_data)
-  }
-
-  if (object$.multi_class == TRUE) {
-    # do stuff later
-    message("dataset is multi-class")
-  } else {
-      if (predictions == "empty") {
-        # predictions somehow failed to happen - predict in here
-        pred_basic <- predict(object$model_list, newdata=training_data, type="prob")
-      } else {
-        # use the given predictions
-        pred_basic = predictions
-      }
-      i = 0
-      colorPal = rainbow(length(object$model_list))
-      for (model in object$model_list) {
-        i = i + 1
-        if (!is.null(model)) {
-          # if given in dataframe format, reduce to vector
-          if (class(pred_basic[[i]]) == "data.frame") {
-            pred_basic[[i]] <- pred_basic[[i]][, 1]
-          }
-          if (i == 1) {
-              # do this to init the plot - for the first model
-              assertthat::are_equal(length(labels), length(pred_basic[[i]]))
-              roc_plot <- pROC::roc(labels, pred_basic[[i]])
-              plot(roc_plot, col = colorPal[i], title="ROC Comparison")
-          } else {
-              assertthat::are_equal(length(labels), length(pred_basic[[i]]))
-              roc_plot <- pROC::roc(labels, pred_basic[[i]])
-              plot(roc_plot, add = T, col = colorPal[i])
-          }
-        }
-      legend("topright", title="Model Type", legend=names(object$model_list),
-               col=colorPal, lty=1:2, cex=0.8)
-    }
-  }
-}
-
 #' This function predict on many different machine learning models
 #' @param trainingSet the dataset to be trained on
 #' @param trainingClasses the labels of the training set
@@ -77,7 +24,7 @@ plot.ModelComparison <- function(object, training_data, labels, predictions="emp
 #' @export
 #' @examples
 #' predict()
-predict.ModelComparison <- function(object, training_data) {
+predict.ModelComparison <- function(object, newdata, ...) {
   # # check to see if function is good
   # is_prepped <- sapply(training_data, function(x) (is.numeric(x) || length(levels(x)) <= 2))
   #
@@ -100,7 +47,11 @@ predict.ModelComparison <- function(object, training_data) {
     }
   } else {
     # predict over the list of models
-    pred_basic <- predict(object$model_list, newdata=training_data, type="prob")
+    pred_basic <- list()
+    for (model in object$model_list) {
+      i = i + 1
+      pred_basic[[i]] <- predict(model, newdata, type="prob")
+    }
     return(pred_basic)
   }
 }
@@ -282,7 +233,7 @@ GetTrainingInfo <- function(trainingSet, training_classes_input, validation) {
     training_classes <- training_classes_input[trainIndex]
     testing_classes <- training_classes_input[-trainIndex]
     # we will take care of the validation
-    trctrl <- caret::trainControl(method = "none", savePredictions = T, classProbs =  TRUE)
+    trctrl <- caret::trainControl(savePredictions = "final", classProbs =  TRUE)
 
   } else {
     # we don't need a specific testing set
@@ -290,9 +241,9 @@ GetTrainingInfo <- function(trainingSet, training_classes_input, validation) {
     testing_data <- trainingSet
     training_classes <- training_classes_input
     if (validation == "cv") {
-      trctrl <- caret::trainControl(method = "cv", savePredictions = T, classProbs=TRUE)
+      trctrl <- caret::trainControl(method = "cv", savePredictions = "final", classProbs=TRUE)
     } else {
-      trctrl <- caret::trainControl(method = "none", savePredictions = T, classProbs=TRUE)
+      trctrl <- caret::trainControl(savePredictions = "final", classProbs=TRUE)
     }
   }
   return(list(training_data, training_classes, trctrl))

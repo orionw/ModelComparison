@@ -37,7 +37,7 @@ test_that("Categorical Data IS given in one hot encoding", {
   #######  use BestModel on the categorical data  ######
   cancer <- getModelComparisons(breast.cancer.x, breast.cancer.y)
   expect_equal(cancer$force_prepared, FALSE)
-  plot(cancer, breast.cancer.x, breast.cancer.y)
+  plot(cancer, breast.cancer.y, breast.cancer.x)
 })
 
 
@@ -52,7 +52,7 @@ test_that("Categorical Data NOT given in one hot encoding", {
   # Note that both will check if the data is encoded properly
   cancer <- getModelComparisons(breast.cancer.x, breast.cancer.y)
   expect_equal(cancer$force_prepared, TRUE)
-  plot(cancer, breast.cancer.x, breast.cancer.y)
+  plot(cancer, breast.cancer.y, breast.cancer.x)
 })
 
 test_that("Categorical Data HALF given in one hot encoding", {
@@ -71,7 +71,7 @@ test_that("Categorical Data HALF given in one hot encoding", {
   dmy <- caret::dummyVars(" ~ .", data = breast.cancer.x)
   breast.cancer.x <- data.frame(predict(dmy, newdata = breast.cancer.x))
   # data is encoded
-  plot(cancer, breast.cancer.x, breast.cancer.y)
+  plot(cancer, breast.cancer.y, breast.cancer.x)
 })
 
 test_that("Categorical Data other HALF given in one hot encoding", {
@@ -90,5 +90,5 @@ test_that("Categorical Data other HALF given in one hot encoding", {
   cancer <- getModelComparisons(breast.cancer.x, breast.cancer.y)
   expect_equal(cancer$force_prepared, FALSE)
   # data is not encoded
-  plot(cancer, breast.cancer.x1, breast.cancer.y)
+  plot(cancer, breast.cancer.y, breast.cancer.x)
 })

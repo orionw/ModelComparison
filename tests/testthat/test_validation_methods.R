@@ -21,7 +21,7 @@ test_that("80/20 validation works", {
   # check that there are the same number of predictions as there are models
   expect_equal(length(comp$model_list), length(pred_list))
   # ensure plot doesn't have any errors
-  plot(comp, titanic[, -1], titanic[, 1])
+  plot(comp, titanic[, 1], titanic[, -1])
 })
 
 test_that("50/50 validation works", {
@@ -33,7 +33,7 @@ test_that("50/50 validation works", {
   # check that there are the same number of predictions as there are models
   expect_equal(length(comp$model_list), length(pred_list))
   # ensure plot doesn't have any errors
-  plot(comp, titanic[, -1], titanic[, 1])
+  plot(comp, titanic[, 1], titanic[, -1])
 })
 
 
@@ -46,7 +46,7 @@ test_that("95/05 validation works", {
   # check that there are the same number of predictions as there are models
   expect_equal(length(comp$model_list), length(pred_list))
   # ensure plot doesn't have any errors
-  plot(comp, titanic[, -1], titanic[, 1])
+  plot(comp, titanic[, 1], titanic[, -1])
 })
 
 test_that("CV validation works", {
@@ -58,5 +58,5 @@ test_that("CV validation works", {
   # check that there are the same number of predictions as there are models
   expect_equal(length(comp$model_list), length(pred_list))
   # ensure plot doesn't have any errors
-  plot(comp, titanic[, -1], titanic[, 1])
+  plot(comp, titanic[, 1], titanic[, -1])
 })

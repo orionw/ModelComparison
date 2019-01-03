@@ -31,5 +31,5 @@ test_that("Ensemble used in a ModelComparison", {
   comp <- convertToComparison(mlist, F)
   expect_equal(class(comp), "ModelComparison")
   # make sure plot works
-  print(plot(comp, iris_ready[,1:4], iris_ready[, 5]))
+  print(plot(comp, iris_ready[, 5], iris_ready[,1:4]))
 })
