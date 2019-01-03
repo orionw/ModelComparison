@@ -67,7 +67,7 @@ test_that("MVP on more complex dataset", {
   # remove that categorical variables
   x.val = x.val[,c(-1, -2)]
   # get comparisons - warning occurs from too easy of data so suppress it for testing purposes
-  ion <- getModelComparisons(Ionosphere$Class, x.val)
+  ion <- getModelComparisons(x.val, Ionosphere$Class)
   plot(ion, Ionosphere$Class, x.val)
 })
 
