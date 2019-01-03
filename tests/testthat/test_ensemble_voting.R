@@ -4,70 +4,70 @@ context("Voting with Ensemble Functionality")
 library(BestModel)
 
 # helper function for a 2 response iris dataset
-prepare_iris <- function() {
-  data(iris)
-  toBeRemoved<-which(iris$Species=="setosa")
-  irisReal <-iris[-toBeRemoved,]
-  irisReal <- droplevels(irisReal)
-  levels(irisReal$Species) <- c('versicolor', 'virginica' )
-  return(irisReal)
+PrepareNumericTitanic <- function() {
+  titanic <- read.csv("~/BestModel/tests/testthat/titanic.csv")
+  titanic <- titanic[, c("Survived", "Age",
+                         "Siblings.Spouses.Aboard", "Parents.Children.Aboard", "Fare")]
+  titanic$Survived = as.factor(titanic$Survived)
+  levels(titanic$Survived) <- c("died", "survived")
+  return(titanic)
 }
 
 test_that("Ensemble weighting function with auto-weighting", {
   # prepare the dataset
-  iris_ready <- prepare_iris()
+  titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
-  ensem <- Ensemble(comp$model_list, "majorityWeight", iris_ready[,1:4], iris_ready[,5])
+  comp <- getModelComparisons(titanic[, -1], titanic[, 1])
+  ensem <- Ensemble(comp$model_list, "majorityWeight", titanic[, -1], titanic[, 1])
   expect_equal(length(ensem$weight.list), length(ensem$models))
   expect_equal(class(ensem), "Ensemble")
-  pred <- predict(ensem, iris_ready[, 1:4])
-  expect_equal(length(iris_ready[, 5]), length(pred))
+  pred <- predict(ensem, titanic[, -1])
+  expect_equal(length(titanic[, 1]), length(pred))
 })
 
 test_that("Ensemble weighting function with given weights", {
   # prepare the dataset
-  iris_ready <- prepare_iris()
+  titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
+  comp <- getModelComparisons(titanic[, -1], titanic[, 1])
   ensem <- Ensemble(comp$model_list, "majorityWeight", runif(n=length(comp$model_list), min=0, max=1))
   expect_equal(class(ensem), "Ensemble")
-  pred <- predict(ensem, iris_ready[, 1:4])
-  expect_equal(length(iris_ready[, 5]), length(pred))
+  pred <- predict(ensem, titanic[, -1])
+  expect_equal(length(titanic[, 1]), length(pred))
 })
 
 test_that("Average weighting Ensemble", {
   # prepare the dataset
-  iris_ready <- prepare_iris()
+  titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
-  ensem <- Ensemble(comp$model_list, "averageVote")
+  comp <- getModelComparisons(titanic[, -1], titanic[, 1])
+  ensem <- Ensemble(comp$model_list, "averageVote", runif(n=length(comp$model_list), min=0, max=1))
   expect_equal(class(ensem), "Ensemble")
-  pred <- predict(ensem, iris_ready[, 1:4])
-  expect_equal(length(iris_ready[, 5]), length(pred))
+  pred <- predict(ensem, titanic[, -1])
+  expect_equal(length(titanic[, 1]), length(pred))
 })
 
 test_that("Majority Vote Ensemble", {
   # prepare the dataset
-  iris_ready <- prepare_iris()
+  titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5])
-  ensem <- Ensemble(comp$model_list, "majorityVote")
+  comp <- getModelComparisons(titanic[, -1], titanic[, 1])
+  ensem <- Ensemble(comp$model_list, "majorityVote", runif(n=length(comp$model_list), min=0, max=1))
   expect_equal(class(ensem), "Ensemble")
-  pred <- predict(ensem, iris_ready[, 1:4])
-  expect_equal(length(iris_ready[, 5]), length(pred))
+  pred <- predict(ensem, titanic[, -1])
+  expect_equal(length(titanic[, 1]), length(pred))
 })
 
 test_that("Majority Vote Ensemble With only 2 models", {
   # prepare the dataset
-  iris_ready <- prepare_iris()
+  titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- getModelComparisons(iris_ready[,1:4], iris_ready[,5], modelList = "all")
-  models <- comp$model_list[c(F, F, T, T, F)]
+  comp <- getModelComparisons(titanic[, -1], titanic[, 1], modelList = "all")
+  models <- comp$model_list[c(F, T, T, F, F, F)]
   ensem <- Ensemble(models, "majorityVote")
   expect_equal(class(ensem), "Ensemble")
-  pred <- predict(ensem, iris_ready[, 1:4])
-  expect_equal(length(iris_ready[, 5]), length(pred))
+  pred <- predict(ensem, titanic[, -1])
+  expect_equal(length(titanic[, 1]), length(pred))
 })
 
 

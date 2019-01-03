@@ -13,9 +13,9 @@ prepare_iris <- function() {
   return(irisReal)
 }
 
-test_that("Ensemble plot", {
-  # TODO: decide what to do with this
-})
+# test_that("Ensemble plot", {
+#   # TODO: decide what to do with this
+# })
 
 test_that("Ensemble used in a ModelComparison", {
   # prepare the dataset

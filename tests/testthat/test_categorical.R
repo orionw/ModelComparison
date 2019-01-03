@@ -7,14 +7,6 @@ library(ggplot2)
 library(BestModel)
 library(caret)
 
-PrepareNumericTitanic <- function() {
-  titanic <- read.csv("~/BestModel/tests/testthat/titanic.csv")
-  titanic <- titanic[, c("Survived", "Pclass", "Sex")]
-  titanic$Survived = as.factor(titanic$Survived)
-  titanic$Pclass = as.factor(titanic$Pclass)
-  levels(titanic$Survived) <- c("died", "survived")
-  return(titanic)
-}
 
 prepare_categorical_breast_cancer <- function() {
   data(BreastCancer)
