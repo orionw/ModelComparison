@@ -2,8 +2,6 @@ context("Catagorical Dataset Functionality")
 
 # load the libraries
 library(mlbench)
-library(plyr)
-library(ggplot2)
 library(BestModel)
 library(caret)
 

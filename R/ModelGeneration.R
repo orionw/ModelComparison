@@ -218,7 +218,7 @@ GetBuildFlags <- function(modelList) {
   return(flag.vector)
 }
 
-GetTrainingInfo <- function(trainingSet, training_classes_input, validation) {
+GetTrainingInfo <- function(trainingSet, training_classes_input, validation, trctrl.given) {
   # Get the method of validation and prepare testing and training sets
   split <- regmatches(validation, regexpr("[0-9][0-9]/[0-9][0-9]",validation))
   if (!identical(split, character(0))) {
@@ -246,6 +246,9 @@ GetTrainingInfo <- function(trainingSet, training_classes_input, validation) {
       trctrl <- caret::trainControl(savePredictions = "final", classProbs=TRUE)
     }
   }
+  if (class(trctrl.given) != "character") {
+    trctrl = trctrl.given
+  }
   return(list(training_data, training_classes, trctrl))
 }
 
@@ -256,7 +259,7 @@ GetTrainingInfo <- function(trainingSet, training_classes_input, validation) {
 #' @export
 #' @examples
 #' getModelComparisons()
-getModelComparisons <-function(trainingSet, training_classes_input, validation="80/20", modelList="fast", dataSetSize="small") {
+getModelComparisons <-function(trainingSet, training_classes_input, validation="80/20", modelList="fast", trctrl="none") {
   # check to see if function is good
   is_prepped <- sapply(trainingSet, function(x) (is.numeric(x) || length(levels(x)) <= 2))
 
@@ -273,7 +276,7 @@ getModelComparisons <-function(trainingSet, training_classes_input, validation="
   set.seed(sample(1:9999999, 1))
   multi_class = (nlevels(training_classes_input) > 2)
 
-  training_info <- GetTrainingInfo(trainingSet, training_classes_input, validation)
+  training_info <- GetTrainingInfo(trainingSet, training_classes_input, validation, trctrl)
   training_data = training_info[[1]]
   training_classes = training_info[[2]]
   trctrl = training_info[[3]]
