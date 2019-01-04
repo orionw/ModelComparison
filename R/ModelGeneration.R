@@ -34,17 +34,17 @@ GetAccuracy <- function(object) {
 }
 
 summary.ModelComparison <- function(object, ...) {
-  start <- "This object is a comparison of the following models: "
+  start <- "This object is a comparison of the following models:"
   cat(start)
   cat("\n")
   models <- paste(names(object$model_list), collapse = ", ")
   cat(models)
   if (any(!is.na(object$accuracy.list))) {
     cat("\n\n")
-    cat("with respective accuracies of: ")
+    cat("with respective accuracies of:")
     cat("\n")
     for (acc in object$accuracy.list) {
-      cat(acc[[1]])
+      cat(as.character(acc[[1]]))
       cat(" ")
     }
   }
@@ -53,7 +53,7 @@ summary.ModelComparison <- function(object, ...) {
     cat("and with respective AUC's of: ")
     cat("\n")
     for (auc in object$auc.list) {
-      cat(auc[[1]])
+      cat(as.character(auc[[1]]))
       cat(" ")
     }
   }
