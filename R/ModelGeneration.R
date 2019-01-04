@@ -22,6 +22,10 @@ GetAccuracy <- function(object) {
   accuracy.list <- list()
   i = 0
   for (model in object$model_list) {
+    if (class(model) == "Ensemble") {
+      # TODO implement this
+      return(NULL)
+    }
     i = i + 1
     accuracy.list[[i]] <- model$results["Accuracy"]
   }
@@ -53,8 +57,6 @@ summary.ModelComparison <- function(object, ...) {
       cat(" ")
     }
   }
-
-  # info <- paste(start, models)
 }
 
 #' This function predict on many different machine learning models

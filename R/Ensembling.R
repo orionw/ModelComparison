@@ -13,6 +13,18 @@ StripPredictions <- function(pred) {
   }
 }
 
+summary.Ensemble <- function(object, ...) {
+  start <- "This object is a Ensemble of the following models: "
+  cat(start)
+  cat("\n")
+  models <- paste(names(object$models), collapse = ", ")
+  cat(models)
+  cat("\n\n")
+  cat("And uses a ")
+  cat(object$.voting_type)
+  cat(" voting type")
+}
+
 predict.Ensemble <- function(object, newdata, voting_type="default", ...) {
   preds <- list(length=length(object$models))
   # predict on list of models
@@ -202,5 +214,6 @@ Ensemble <- function(model_list, voting_type, weights = "none", test.set = "none
   ensemble$.voting_type = voting_type
   ensemble$models <- model_list
   ensemble$weight.list = GetModelWeights(ensemble, weights, test.set, train.type)
+  # TODO add accuracy for ensembles to pull out
   return(ensemble)
 }
