@@ -1,5 +1,3 @@
-#source("~/BestModel/R/ModelGeneration.R")
-
 #' This function evalutates many different machine learning models and returns those models with comparison charts
 #' @param trainingSet the dataset to be trained on
 #' @param trainingClasses the labels of the training set
@@ -36,10 +34,14 @@ plot.ModelComparison <- function(object, labels, training_data = "none", predict
   }
 
   ## Plot the chosen type
-  if (plot.type == "ROC") {
+  if (plot.type == 'All') {
+    CreateCombinedPlot(object, pred_basic, labels)
+  } else if (plot.type == "ROC") {
     CreateROCPlot(object, pred_basic, labels)
   } else if (plot.type == "Accuracy") {
     CreateAccuracyPlot(object, pred_basic, labels)
+  } else if (plot.type == "AUC") {
+    CreateAUCPlot(object, pred_basic, labels)
   } else {
     CreateMetricPlot(object, pred_basic, labels, plot.type) }
 }
@@ -104,6 +106,25 @@ CreateAccuracyPlot <- function(object, pred_basic, labels) {
           xlab="Model Name", main="Model Accuracy", beside = TRUE, space = c(0, 0.1))
 }
 
+CreateAUCPlot <- function(object, pred_basic, labels) {
+  # Use accuracy list to plot graph
+  if (is.null(object$auc.list)) {
+    auc.list = list()
+    i = 0
+    for (ind_pred in pred_basic) {
+      i = i + 1
+      # calculate the AUC (grab the first item which is the numeric part)
+      auc.list[[i]] = pROC:::auc(labels, ind_pred[, 1])[[1]]
+    }
+    # this doesn't affect the object outside the function but it makes the code concise
+    object$auc.list = auc.list
+  }
+  # accuracy list was either created above or already existed - now plot
+  barplot(as.matrix(as.data.frame(object$auc.list)), names.arg=names(object$model_list),
+          ylim=c(0, 1), ylab='Percentage', col=rainbow(length(object$auc.list)),
+          xlab="Model Name", main="Model AUC", beside = TRUE, space = c(0, 0.1))
+}
+
 CreateROCPlot <- function(object, pred_basic, labels) {
   if (object$.multi_class == TRUE) {
     # do stuff later TODO
@@ -133,4 +154,57 @@ CreateROCPlot <- function(object, pred_basic, labels) {
              col=colorPal, lty=1:2, cex=0.8)
     }
   }
+}
+
+
+CreateCombinedPlot <- function(object, pred_basic, labels) {
+  metric.list = list()
+  # go through and create combined graph for Accuracy, Recall, AUC, and Precision
+  metric.for.plot <- c("Accuracy", "Recall", "AUC", "Precision")
+  metric.count = 0
+  for (metric in metric.for.plot) {
+    # reset the values every run
+    metric.count = metric.count + 1
+    value.list = list()
+    i = 0
+    for (ind_pred in pred_basic) {
+      i = i + 1
+      if (metric == "AUC") {
+        # calculate the AUC (grab the first item which is the numeric part)
+        value.list[[i]] = pROC:::auc(labels, ind_pred[, 1])[[1]]
+      } else {
+        pred <- as.factor(round(ind_pred[, 1]))
+        # predictions come out backwords, flip them
+        pred <- GetFactorEqual(pred)
+        # assign the correct labels
+        levels(pred) <- levels(labels)
+        conf.matrix = caret::confusionMatrix(labels, pred)
+        # grab the statistic
+        if (metric == "Accuracy") {
+          value.list[[i]] = conf.matrix$overall[metric]
+        } else {
+          # all other metrics
+        value.list[[i]] = conf.matrix$byClass[metric]
+        }
+      }
+      if (is.na(value.list)) {
+        stop("plot.type is not a valid metric name. Please see the documentation for details.")
+      }
+    }
+    metric.list[[metric.count]] = value.list
+  }
+  # turn list of lists into a dataframe
+  metric.df <- t(data.frame(matrix(unlist(metric.list), nrow=length(metric.list), byrow=T),
+                          stringsAsFactors=FALSE))
+  colnames(metric.df) <- metric.for.plot
+  #metric.df["modelName"] <- names(object$model_list)
+
+  # Grouped
+  ggplot(metric.df, aes(names(object$model_list), value)) +
+    geom_bar(aes(fill = variable), position = "dodge", stat="identity")
+
+  # accuracy list was either created above or already existed - now plot
+  barplot(, names.arg=names(object$model_list),
+          ylim=c(0, 1), ylab='Percentage', col=rainbow(length(metric.list)),
+          xlab="Model Name", main=metric, beside = TRUE, space = c(0, 0.1))
 }

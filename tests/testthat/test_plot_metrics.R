@@ -63,3 +63,14 @@ test_that("Plot with unknown metric name fails", {
                "plot.type is not a valid metric name. Please see the documentation")
 })
 
+test_that("Plot with AUC", {
+  titanic <- PrepareNumericTitanic()
+  # create the models
+  comp <- getModelComparisons(titanic[, -1], titanic[, 1], modelList = "all")
+  # predict the values for the dataset
+  pred_list <- predict(comp, titanic[, -1])
+  # check that there are the same number of predictions as there are models
+  expect_equal(length(comp$model_list), length(pred_list))
+  plot(comp, titanic[, 1], titanic[, -1], plot.type="AUC")
+})
+

@@ -10,12 +10,6 @@ LazyData: true
 Suggests: testthat
 depends:
 	caret,
-	dplyr,
-	nnet,
-	e1071,
   pROC,
-  glmnet,
-  pROC,
-  recordPlot,
-  stringr
+  ggplot2
 RoxygenNote: 6.1.1
