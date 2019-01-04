@@ -17,8 +17,8 @@ test_that("Ensemble weighting function with auto-weighting", {
   # prepare the dataset
   titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- getModelComparisons(titanic[, -1], titanic[, 1])
-  ensem <- Ensemble(comp$model_list, "majorityWeight", titanic[, -1], titanic[, 1])
+  comp <- GetModelComparisons(titanic[, -1], titanic[, 1])
+  ensem <- Ensemble(comp$model.list, "majorityWeight", titanic[, -1], titanic[, 1])
   expect_equal(length(ensem$weight.list), length(ensem$models))
   expect_equal(class(ensem), "Ensemble")
   pred <- predict(ensem, titanic[, -1])
@@ -29,8 +29,8 @@ test_that("Ensemble weighting function with given weights", {
   # prepare the dataset
   titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- getModelComparisons(titanic[, -1], titanic[, 1])
-  ensem <- Ensemble(comp$model_list, "majorityWeight", runif(n=length(comp$model_list), min=0, max=1))
+  comp <- GetModelComparisons(titanic[, -1], titanic[, 1])
+  ensem <- Ensemble(comp$model.list, "majorityWeight", runif(n=length(comp$model.list), min=0, max=1))
   expect_equal(class(ensem), "Ensemble")
   pred <- predict(ensem, titanic[, -1])
   expect_equal(length(titanic[, 1]), length(pred))
@@ -40,8 +40,8 @@ test_that("Average weighting Ensemble", {
   # prepare the dataset
   titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- getModelComparisons(titanic[, -1], titanic[, 1])
-  ensem <- Ensemble(comp$model_list, "averageVote", runif(n=length(comp$model_list), min=0, max=1))
+  comp <- GetModelComparisons(titanic[, -1], titanic[, 1])
+  ensem <- Ensemble(comp$model.list, "averageVote", runif(n=length(comp$model.list), min=0, max=1))
   expect_equal(class(ensem), "Ensemble")
   pred <- predict(ensem, titanic[, -1])
   expect_equal(length(titanic[, 1]), length(pred))
@@ -51,8 +51,8 @@ test_that("Majority Vote Ensemble", {
   # prepare the dataset
   titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- getModelComparisons(titanic[, -1], titanic[, 1])
-  ensem <- Ensemble(comp$model_list, "majorityVote", runif(n=length(comp$model_list), min=0, max=1))
+  comp <- GetModelComparisons(titanic[, -1], titanic[, 1])
+  ensem <- Ensemble(comp$model.list, "majorityVote", runif(n=length(comp$model.list), min=0, max=1))
   expect_equal(class(ensem), "Ensemble")
   pred <- predict(ensem, titanic[, -1])
   expect_equal(length(titanic[, 1]), length(pred))
@@ -62,8 +62,8 @@ test_that("Majority Vote Ensemble With only 2 models", {
   # prepare the dataset
   titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- getModelComparisons(titanic[, -1], titanic[, 1], modelList = "all")
-  models <- comp$model_list[c(F, T, T, F, F, F)]
+  comp <- GetModelComparisons(titanic[, -1], titanic[, 1], modelList = "all")
+  models <- comp$model.list[c(F, T, T, F, F, F)]
   ensem <- Ensemble(models, "majorityVote")
   expect_equal(class(ensem), "Ensemble")
   pred <- predict(ensem, titanic[, -1])

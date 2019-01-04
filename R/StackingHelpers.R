@@ -13,3 +13,12 @@ GetPredictionsForStacking <- function(models, x.values) {
   colnames(x.values) <- names.df
   return(x.values)
 }
+
+PrepareIris <- function() {
+  data(iris)
+  toBeRemoved<-which(iris$Species=="setosa")
+  irisReal <-iris[-toBeRemoved,]
+  irisReal <- droplevels(irisReal)
+  levels(irisReal$Species) <- c('versicolor', 'virginica' )
+  return(irisReal)
+}

@@ -21,11 +21,11 @@ summary.Ensemble <- function(object, ...) {
   cat(models)
   cat("\n\n")
   cat("And uses a ")
-  cat(object$.voting_type)
+  cat(object$.voting.type)
   cat(" voting type")
 }
 
-predict.Ensemble <- function(object, newdata, voting_type="default", ...) {
+predict.Ensemble <- function(object, newdata, voting.type="default", ...) {
   preds <- list(length=length(object$models))
   # predict on list of models
   i = 0
@@ -35,111 +35,111 @@ predict.Ensemble <- function(object, newdata, voting_type="default", ...) {
   }
 
     # input overrides set voting type
-  if (voting_type != "default") {
-      if (voting_type == "majorityVote") {
+  if (voting.type != "default") {
+      if (voting.type == "majorityVote") {
         return(MajorityVote(preds))
-    } else if (voting_type == "majorityWeight") {
+    } else if (voting.type == "majorityWeight") {
       return(MajorityWeight(preds, object$weight.list))
-    } else if (voting_type == "averageVote") {
+    } else if (voting.type == "averageVote") {
       return((AverageVote(preds)))
     } else {
       stop("Voting type was not correctly specified.  Please use 'majorityVote',
            'majorityWeight', or 'averageVote'")
     }
-  } else if (object$.voting_type == "majorityVote") {
+  } else if (object$.voting.type == "majorityVote") {
     # round the values before passing them in
     return(MajorityVote(preds))
 
-  } else if (object$.voting_type == "majorityWeight") {
+  } else if (object$.voting.type == "majorityWeight") {
     # not majority vote, use weighting
     return(MajorityWeight(preds, object$weight.list))
 
-  } else if (object$.voting_type == "averageVote"){
+  } else if (object$.voting.type == "averageVote"){
       # use average weighting
     return((AverageVote(preds)))
   }
 }
 
 
-MajorityVote <- function(list_of_predictions){
-  if (anyNA(list_of_predictions, recursive = TRUE)) {
+MajorityVote <- function(list.of.predictions){
+  if (anyNA(list.of.predictions, recursive = TRUE)) {
     stop("There are NA's in this prediction.  Please predict correct classes")
   }
   # if predictions are given in dataframe form, strip them to vector form
-  if (class(list_of_predictions[[1]]) == "data.frame") {
-    list_of_predictions <- StripPredictions(list_of_predictions)
+  if (class(list.of.predictions[[1]]) == "data.frame") {
+    list.of.predictions <- StripPredictions(list.of.predictions)
   }
-  votesFinal <- list(length=length(list_of_predictions[[1]]))
-  for(i in 1:length(list_of_predictions[[1]])){
+  votesFinal <- list(length=length(list.of.predictions[[1]]))
+  for(i in 1:length(list.of.predictions[[1]])){
     # for length of the predictions
-    vote = vector(mode="numeric", length=length(list_of_predictions))
+    vote = vector(mode="numeric", length=length(list.of.predictions))
     j = 0
-    for (model_pred in list_of_predictions) {
+    for (model.pred in list.of.predictions) {
       j = j + 1
       # for each model at that prediction index
-      vote[[j]] = round(model_pred[[i]])
+      vote[[j]] = round(model.pred[[i]])
     }
     votesFinal[[i]] = (names(which.max(table(vote))))
   }
   return((as.numeric(votesFinal)))
 }
 
-MajorityWeight <- function(list_of_predictions, weight_list){
-  if (anyNA(list_of_predictions, recursive = TRUE)) {
+MajorityWeight <- function(list.of.predictions, weight.list){
+  if (anyNA(list.of.predictions, recursive = TRUE)) {
     stop("There are NA's in this prediction.  Please predict correct classes")
   }
   # if predictions are given in dataframe form, strip them to vector form
-  if (class(list_of_predictions[[1]]) == "data.frame") {
-    list_of_predictions <- StripPredictions(list_of_predictions)
+  if (class(list.of.predictions[[1]]) == "data.frame") {
+    list.of.predictions <- StripPredictions(list.of.predictions)
   }
-  votesFinal <- list(length=length(list_of_predictions[[1]]))
-  for(i in 1:length(list_of_predictions[[1]])){
+  votesFinal <- list(length=length(list.of.predictions[[1]]))
+  for(i in 1:length(list.of.predictions[[1]])){
     # for length of the predictions
-    vote = vector(mode="numeric", length=length(list_of_predictions))
+    vote = vector(mode="numeric", length=length(list.of.predictions))
     j = 0
-    for (model_pred in list_of_predictions) {
+    for (model.pred in list.of.predictions) {
       j = j + 1
       # for each model at that prediction index
-      vote[[j]] = model_pred[[i]] * weight_list[[j]]
+      vote[[j]] = model.pred[[i]] * weight.list[[j]]
     }
-    sum_preds = sum(vote)
-    if (sum_preds > 1) {
-      sum_preds = 1
-    } else if (sum_preds < 0) {
-      sum_preds = 0
+    sum.preds = sum(vote)
+    if (sum.preds > 1) {
+      sum.preds = 1
+    } else if (sum.preds < 0) {
+      sum.preds = 0
     }
-    votesFinal[[i]] = sum_preds
+    votesFinal[[i]] = sum.preds
   }
   # remove all names associated
   names(votesFinal) <- c()
   return(as.numeric(votesFinal))
 }
 
-AverageVote <- function(list_of_predictions){
-  if (anyNA(list_of_predictions, recursive = TRUE)) {
+AverageVote <- function(list.of.predictions){
+  if (anyNA(list.of.predictions, recursive = TRUE)) {
     stop("There are NA's in this prediction.  Please predict correct classes")
   }
   # if predictions are given in dataframe form, strip them to vector form
-  if (class(list_of_predictions[[1]]) == "data.frame") {
-    list_of_predictions <- StripPredictions(list_of_predictions)
+  if (class(list.of.predictions[[1]]) == "data.frame") {
+    list.of.predictions <- StripPredictions(list.of.predictions)
   }
-  votesFinal <- list(length=length(list_of_predictions[[1]]))
-  for(i in 1:length(list_of_predictions[[1]])){
+  votesFinal <- list(length=length(list.of.predictions[[1]]))
+  for(i in 1:length(list.of.predictions[[1]])){
     # for length of the predictions
-    vote = vector(mode="numeric", length=length(list_of_predictions))
+    vote = vector(mode="numeric", length=length(list.of.predictions))
     j = 0
-    for (model_pred in list_of_predictions) {
+    for (model.pred in list.of.predictions) {
       j = j + 1
       # for each model at that prediction index
-      vote[[j]] = model_pred[[i]]
+      vote[[j]] = model.pred[[i]]
     }
-    sum_preds = sum(vote) / length(list_of_predictions)
-    if (sum_preds > 1) {
-      sum_preds = 1
-    } else if (sum_preds < 0) {
-      sum_preds = 0
+    sum.preds = sum(vote) / length(list.of.predictions)
+    if (sum.preds > 1) {
+      sum.preds = 1
+    } else if (sum.preds < 0) {
+      sum.preds = 0
     }
-    votesFinal[[i]] = sum_preds
+    votesFinal[[i]] = sum.preds
   }
   # remove all names associated
   names(votesFinal) <- c()
@@ -172,9 +172,9 @@ GetWeightsFromTestingSet <- function(ensemble, df.train, test.set, train.type) {
   weights <- list(length = length(ensemble$models))
   test.set <- GetFactorEqual(test.set)
   i = 0
-  for (ind_pred in preds) {
+  for (ind.pred in preds) {
     i = i + 1
-    conf.matrix = caret::confusionMatrix(test.set, as.factor(round(ind_pred[, 1])))
+    conf.matrix = caret::confusionMatrix(test.set, as.factor(round(ind.pred[, 1])))
     weights[[i]] = conf.matrix$byClass[train.type][[1]]
   }
   return(weights)
@@ -184,7 +184,7 @@ GetModelWeights <- function(ensemble, weights, test.set, train.type) {
   if (class(weights) == "character" && weights == "none") {
     message("Weights were not supplied.  Note that in order to use a weighted voting
             function you must supply them with the GetModelWeights function")
-    if (ensemble$.voting_type != "majorityWeight") {
+    if (ensemble$.voting.type != "majorityWeight") {
       return(NULL)
     }
   } else {
@@ -208,11 +208,11 @@ GetModelWeights <- function(ensemble, weights, test.set, train.type) {
 
 ## weights are either a list of numeric values, or a dataframe that will be used as
 ## a training set.
-Ensemble <- function(model_list, voting_type, weights = "none", test.set = "none", train.type = "Balanced Accuracy") {
+Ensemble <- function(model.list, voting.type, weights = "none", test.set = "none", train.type = "Balanced Accuracy") {
   ensemble <- list()
   class(ensemble) <- "Ensemble"
-  ensemble$.voting_type = voting_type
-  ensemble$models <- model_list
+  ensemble$.voting.type = voting.type
+  ensemble$models <- model.list
   ensemble$weight.list = GetModelWeights(ensemble, weights, test.set, train.type)
   # TODO add accuracy for ensembles to pull out
   return(ensemble)
