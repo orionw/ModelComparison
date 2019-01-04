@@ -122,17 +122,24 @@ CreateCombinedPlot <- function(object, pred_basic, labels,
   metric.df <- data.frame(t(data.frame(matrix(unlist(metric.list), nrow=length(metric.list), byrow=T),
                           stringsAsFactors=FALSE)))
   colnames(metric.df) <- metrics.for.plot
+
+  # add model types for GGplot2 and get it into the right form
   metric.df["model"] <- names(object$model_list)
   data.m <- reshape2::melt(metric.df, id.vars='model')
 
+  # Plot with GGplot2
   ggplot(data.m, aes(model, value)) + geom_bar(aes(fill = variable),
     width = 0.4, position = position_dodge(width=0.5), stat="identity") +
-    theme(legend.position="top", legend.title =
-            element_blank(),axis.title.x=element_blank(),
-          axis.title.y=element_blank())
+    labs(title= "Model Comparison",
+         y="Percent", x = "Model", fill = "Metric")
 
-  # # accuracy list was either created above or already existed - now plot
-  # barplot(, names.arg=names(object$model_list),
-  #         ylim=c(0, 1), ylab='Percentage', col=rainbow(length(metric.list)),
-  #         xlab="Model Name", main=metric, beside = TRUE, space = c(0, 0.1))
+  # # to let the legend grow
+  # par(oma=c(0, 0, 0, 5))
+  # # Plot with Base R, by removing the model column and using a matrix
+  # barplot(as.matrix(metric.df[, -dim(metric.df)[[2]]]), names.arg=names(metrics.for.plot),
+  #         ylim=c(0, 1), ylab='Percentage', col=rainbow(length(object$model_list)),
+  #         xlab="Model Name", main="Model Comparison", beside = TRUE)
+  #
+  # legend(par('usr')[2], 1, title="Model Type", legend=names(object$model_list),
+  #        col=rainbow(length(object$model_list)),lty=1, cex=0.8)
 }
