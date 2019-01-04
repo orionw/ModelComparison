@@ -21,7 +21,7 @@ test_that("Accuracy Plot works", {
   # check that there are the same number of predictions as there are models
   expect_equal(length(comp$model_list), length(pred_list))
   # ensure plot doesn't have any errors
-  plot(comp, titanic[, 1], titanic[, -1], plot.type="Accuracy")
+  plot(comp, titanic[, 1], titanic[, -1], plot.type=c("Accuracy"))
 })
 
 test_that("ROC Plot works", {
@@ -33,7 +33,9 @@ test_that("ROC Plot works", {
   # check that there are the same number of predictions as there are models
   expect_equal(length(comp$model_list), length(pred_list))
   # ensure plot doesn't have any errors
-  plot(comp, titanic[, 1], titanic[, -1], plot.type="ROC")
+  plot(comp, titanic[, 1], titanic[, -1], plot.type=c("ROC"))
+  # check AUC
+  plot(comp, titanic[, 1], titanic[, -1], plot.type=c("AUC"))
 })
 
 test_that("Other metric plots work", {
@@ -46,12 +48,12 @@ test_that("Other metric plots work", {
   expect_equal(length(comp$model_list), length(pred_list))
   # ensure plot doesn't have any errors
   plot(comp, titanic[, 1], titanic[, -1], plot.type="Precision")
-  plot(comp, titanic[, 1], titanic[, -1], plot.type="Specificity")
+  plot(comp, titanic[, 1], titanic[, -1], plot.type=c("Specificity"))
   plot(comp, titanic[, 1], titanic[, -1], plot.type="Recall")
-  plot(comp, titanic[, 1], titanic[, -1], plot.type="Detection Rate")
+  plot(comp, titanic[, 1], titanic[, -1], plot.type=c("Detection Rate"))
 })
 
-test_that("Plot with unknown metric name fails", {
+test_that("Error handling on Plotting", {
   titanic <- PrepareNumericTitanic()
   # create the models
   comp <- getModelComparisons(titanic[, -1], titanic[, 1], modelList = "all")
@@ -59,11 +61,21 @@ test_that("Plot with unknown metric name fails", {
   pred_list <- predict(comp, titanic[, -1])
   # check that there are the same number of predictions as there are models
   expect_equal(length(comp$model_list), length(pred_list))
-  expect_error(plot(comp, titanic[, 1], titanic[, -1], plot.type="blah"),
+  expect_error(plot(comp, titanic[, 1], titanic[, -1], plot.type=c("blah")),
                "plot.type is not a valid metric name. Please see the documentation")
+  expect_error(plot(comp, titanic[, 1], titanic[, -1], plot.type="not a list"),
+               "plot.type is not a valid metric name. Please see the documentation")
+  expect_error(plot(comp, titanic[, 1], titanic[, -1], plot.type=3),
+               "Undefined plot.type.  Please check the documentation.")
+  # ROC with others, fails
+  expect_error(plot(comp, titanic[, 1], titanic[, -1], plot.type=c("ROC, Specificity",
+                                                                   "Precision", "AUC",
+                                                                   "Recall", "Detection Rate")),
+               "plot.type is not a valid metric name. Please see the documentation for details")
 })
 
-test_that("Plot with AUC", {
+
+test_that("Plot All", {
   titanic <- PrepareNumericTitanic()
   # create the models
   comp <- getModelComparisons(titanic[, -1], titanic[, 1], modelList = "all")
@@ -71,6 +83,11 @@ test_that("Plot with AUC", {
   pred_list <- predict(comp, titanic[, -1])
   # check that there are the same number of predictions as there are models
   expect_equal(length(comp$model_list), length(pred_list))
-  plot(comp, titanic[, 1], titanic[, -1], plot.type="AUC")
+  plot(comp, titanic[, 1], titanic[, -1], plot.type=c("All"))
+  # without vector works
+  plot(comp, titanic[, 1], titanic[, -1], plot.type="All")
+  # manual types work
+  plot(comp, titanic[, 1], titanic[, -1], plot.type=c("Specificity", "Precision", "AUC",
+                                                      "Recall", "Detection Rate"))
 })
 

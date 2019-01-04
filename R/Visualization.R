@@ -1,6 +1,8 @@
 #' This function evalutates many different machine learning models and returns those models with comparison charts
 #' @param trainingSet the dataset to be trained on
 #' @param trainingClasses the labels of the training set
+#' @param plot.type A vector of characters that are the values seen in the plot
+#' (examples include ROC, AUC, Accuracy, etc.)  Note: ROC cannot be plotted with other metrics.
 #' @keywords
 #' @export
 #' @examples
@@ -34,16 +36,17 @@ plot.ModelComparison <- function(object, labels, training_data = "none", predict
   }
 
   ## Plot the chosen type
-  if (plot.type == 'All') {
-    CreateCombinedPlot(object, pred_basic, labels)
-  } else if (plot.type == "ROC") {
+  if (length(plot.type) == 1 && plot.type == c("ROC")) {
     CreateROCPlot(object, pred_basic, labels)
-  } else if (plot.type == "Accuracy") {
-    CreateAccuracyPlot(object, pred_basic, labels)
-  } else if (plot.type == "AUC") {
-    CreateAUCPlot(object, pred_basic, labels)
+  } else if (class(plot.type) == "character") {
+    if (sum(is.element(plot.type, "All"))) {
+      CreateCombinedPlot(object, pred_basic, labels)
+    } else {
+      CreateCombinedPlot(object, pred_basic, labels, plot.type)
+    }
   } else {
-    CreateMetricPlot(object, pred_basic, labels, plot.type) }
+    stop("Undefined plot.type.  Please check the documentation.")
+  }
 }
 
 FlipPredictions <- function(pred) {
@@ -157,12 +160,12 @@ CreateROCPlot <- function(object, pred_basic, labels) {
 }
 
 
-CreateCombinedPlot <- function(object, pred_basic, labels) {
+CreateCombinedPlot <- function(object, pred_basic, labels,
+                               metrics.for.plot = c("Accuracy", "Recall", "AUC", "Precision")) {
   metric.list = list()
   # go through and create combined graph for Accuracy, Recall, AUC, and Precision
-  metric.for.plot <- c("Accuracy", "Recall", "AUC", "Precision")
   metric.count = 0
-  for (metric in metric.for.plot) {
+  for (metric in metrics.for.plot) {
     # reset the values every run
     metric.count = metric.count + 1
     value.list = list()
@@ -187,24 +190,27 @@ CreateCombinedPlot <- function(object, pred_basic, labels) {
         value.list[[i]] = conf.matrix$byClass[metric]
         }
       }
-      if (is.na(value.list)) {
+      if (is.na(value.list[[1]])) {
         stop("plot.type is not a valid metric name. Please see the documentation for details.")
       }
     }
     metric.list[[metric.count]] = value.list
   }
   # turn list of lists into a dataframe
-  metric.df <- t(data.frame(matrix(unlist(metric.list), nrow=length(metric.list), byrow=T),
-                          stringsAsFactors=FALSE))
-  colnames(metric.df) <- metric.for.plot
-  #metric.df["modelName"] <- names(object$model_list)
+  metric.df <- data.frame(t(data.frame(matrix(unlist(metric.list), nrow=length(metric.list), byrow=T),
+                          stringsAsFactors=FALSE)))
+  colnames(metric.df) <- metrics.for.plot
+  metric.df["model"] <- names(object$model_list)
+  data.m <- reshape2::melt(metric.df, id.vars='model')
 
-  # Grouped
-  ggplot(metric.df, aes(names(object$model_list), value)) +
-    geom_bar(aes(fill = variable), position = "dodge", stat="identity")
+  ggplot(data.m, aes(model, value)) + geom_bar(aes(fill = variable),
+    width = 0.4, position = position_dodge(width=0.5), stat="identity") +
+    theme(legend.position="top", legend.title =
+            element_blank(),axis.title.x=element_blank(),
+          axis.title.y=element_blank())
 
-  # accuracy list was either created above or already existed - now plot
-  barplot(, names.arg=names(object$model_list),
-          ylim=c(0, 1), ylab='Percentage', col=rainbow(length(metric.list)),
-          xlab="Model Name", main=metric, beside = TRUE, space = c(0, 0.1))
+  # # accuracy list was either created above or already existed - now plot
+  # barplot(, names.arg=names(object$model_list),
+  #         ylim=c(0, 1), ylab='Percentage', col=rainbow(length(metric.list)),
+  #         xlab="Model Name", main=metric, beside = TRUE, space = c(0, 0.1))
 }
