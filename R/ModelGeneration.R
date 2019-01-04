@@ -14,7 +14,47 @@ ModelComparison <- function(modelList, multi_class, force_prepped, diff_names=NU
   comparison$force_prepared = force_prepped
   comparison$.multi_class <- multi_class
   class(comparison) <- "ModelComparison"
+  comparison$accuracy.list <- GetAccuracy(comparison)
   return(comparison)
+}
+
+GetAccuracy <- function(object) {
+  accuracy.list <- list()
+  i = 0
+  for (model in object$model_list) {
+    i = i + 1
+    accuracy.list[[i]] <- model$results["Accuracy"]
+  }
+  names(accuracy.list) <- names(object$model_list)
+  return(accuracy.list)
+}
+
+summary.ModelComparison <- function(object, ...) {
+  start <- "This object is a comparison of the following models: "
+  cat(start)
+  cat("\n")
+  models <- paste(names(object$model_list), collapse = ", ")
+  cat(models)
+  if (any(!is.na(object$accuracy.list))) {
+    cat("\n\n")
+    cat("with respective accuracies of: ")
+    cat("\n")
+    for (acc in object$accuracy.list) {
+      cat(acc[[1]])
+      cat(" ")
+    }
+  }
+  if (any(!is.na(object$auc.list))) {
+    cat("\n\n")
+    cat("and with respective AUC's of: ")
+    cat("\n")
+    for (auc in object$auc.list) {
+      cat(auc[[1]])
+      cat(" ")
+    }
+  }
+
+  # info <- paste(start, models)
 }
 
 #' This function predict on many different machine learning models
