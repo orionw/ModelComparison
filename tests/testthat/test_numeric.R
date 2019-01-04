@@ -66,7 +66,7 @@ test_that("MVP on more complex dataset", {
 #   # prepare the dataset
 #   iris_ready <- prepare_iris()
 #   # create the models
-#   comp <- GetModelComparisons(iris_ready[,1:4], iris_ready[,5], modelList="fast")
+#   comp <- GetModelComparisons(iris_ready[,1:4], iris_ready[,5], model.list="fast")
 #   # make a list of models and mix it up
 #   different_list = comp$model.list
 #   names(different_list) <- c("Random", "Stuff")

@@ -62,7 +62,7 @@ test_that("Majority Vote Ensemble With only 2 models", {
   # prepare the dataset
   titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- GetModelComparisons(titanic[, -1], titanic[, 1], modelList = "all")
+  comp <- GetModelComparisons(titanic[, -1], titanic[, 1], model.list = "all")
   models <- comp$model.list[c(F, T, T, F, F, F)]
   ensem <- Ensemble(models, "majorityVote")
   expect_equal(class(ensem), "Ensemble")

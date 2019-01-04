@@ -15,7 +15,7 @@ PrepareNumericTitanic <- function() {
 test_that("Accuracy Plot works", {
   titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- GetModelComparisons(titanic[, -1], titanic[, 1], modelList = "all")
+  comp <- GetModelComparisons(titanic[, -1], titanic[, 1], model.list = "all")
   # predict the values for the dataset
   pred.list <- predict(comp, titanic[, -1])
   # check that there are the same number of predictions as there are models
@@ -27,7 +27,7 @@ test_that("Accuracy Plot works", {
 test_that("ROC Plot works", {
   titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- GetModelComparisons(titanic[, -1], titanic[, 1], modelList = "all")
+  comp <- GetModelComparisons(titanic[, -1], titanic[, 1], model.list = "all")
   # predict the values for the dataset
   pred.list <- predict(comp, titanic[, -1])
   # check that there are the same number of predictions as there are models
@@ -41,7 +41,7 @@ test_that("ROC Plot works", {
 test_that("Other metric plots work", {
   titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- GetModelComparisons(titanic[, -1], titanic[, 1], modelList = "all")
+  comp <- GetModelComparisons(titanic[, -1], titanic[, 1], model.list = "all")
   # predict the values for the dataset
   pred.list <- predict(comp, titanic[, -1])
   # check that there are the same number of predictions as there are models
@@ -56,7 +56,7 @@ test_that("Other metric plots work", {
 test_that("Error handling on Plotting", {
   titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- GetModelComparisons(titanic[, -1], titanic[, 1], modelList = "all")
+  comp <- GetModelComparisons(titanic[, -1], titanic[, 1], model.list = "all")
   # predict the values for the dataset
   pred.list <- predict(comp, titanic[, -1])
   # check that there are the same number of predictions as there are models
@@ -78,7 +78,7 @@ test_that("Error handling on Plotting", {
 test_that("Plot All", {
   titanic <- PrepareNumericTitanic()
   # create the models
-  comp <- GetModelComparisons(titanic[, -1], titanic[, 1], modelList = "all")
+  comp <- GetModelComparisons(titanic[, -1], titanic[, 1], model.list = "all")
   # predict the values for the dataset
   pred.list <- predict(comp, titanic[, -1])
   # check that there are the same number of predictions as there are models
