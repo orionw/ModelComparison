@@ -33,7 +33,14 @@ test_that("Other packages used for ModelComparison", {
   names(models) <- c("naive.bayes", "rforest", "neural.net", "glmnet")
 
   comp <- ModelComparison(models, F)
-  plot(comp, titanic[, 1], titanic[, -1])
+  # all metrics default
+  plot(comp, titanic[, 1], titanic[, -1], "all")
+  # roc curve works
+  plot(comp, titanic[, 1], titanic[, -1], "roc")
+  # multiple metrics, two word metrics, uncapitalized
+  plot(comp, titanic[, 1], titanic[, -1], list("auc", "precision", "accuracy",
+                                               "recall", "detection rate"))
+
 
   # ensem1 <- Ensemble(comp$model.list, "majorityWeight", iris[,1:4], iris[,5])
 

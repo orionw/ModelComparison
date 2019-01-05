@@ -45,7 +45,7 @@ plot.ModelComparison <- function(object, labels, training.data = "none", predict
     } else {
       simpleCap <- function(x) {
         if (x == "auc") {
-          return(sapply(plot.type, toupper))
+          return(toupper(x))
         }
         s <- strsplit(x, " ")[[1]]
         return(paste(toupper(substring(s, 1,1)), substring(s, 2),
