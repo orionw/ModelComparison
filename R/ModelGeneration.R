@@ -1,4 +1,24 @@
-#' ModelComparisons()
+#' A helper function used by GetModelComparison and ModelComparison to create the
+#' ModelComparison object. It gives the object it's class and assigns it it's members
+#'
+#' @param model.list a list of models that are already trained.  The name of the model.list should
+#' be accurate to the names of the models, unless other names are given in diff.names
+#' @param multi.class a boolean value of whether the classification output is more than two outputs
+#' @param force.prepped a boolean value describing whether the dataset was forced prepared into
+#' one hot encoding for training.  Only applicable with categorical data
+#' @param diff.names a vector or list containing the names of the model.list models, in that
+#' respective order.  This is optional if the names are already attatched to the model.list
+#'  and will default to NULL.
+#'
+#' @return the fully created ModelComparison object
+#'
+#' @examples
+#' # This function is used by GetModelComparison and ModelComparison to create the
+#' ModelComparison object. The follow code is what is used by ModelComparison:
+#' CreateModelComparison(model.list, multi.class, F, names(model.list))
+#'
+#' @keywords internal
+#' @export
 CreateModelComparison <- function(model.list, multi.class, force.prepped, diff.names=NULL) {
   # we can add our own integrity checks
   comparison <- list()
@@ -18,6 +38,18 @@ CreateModelComparison <- function(model.list, multi.class, force.prepped, diff.n
   return(comparison)
 }
 
+#' Gives a summary of the models used in the ModelComparison object
+#'
+#' @param object the ModelComparison object to get the accuracies from
+#'
+#' @return a list of numeric values that are the accuracies of the models
+#'
+#' @examples
+#' # see the CreateModelComparison function for it's use as follows:
+#'   comparison$accuracy.list <- GetAccuracy(comparison)
+#'
+#' @keywords internal
+#' @export
 GetAccuracy <- function(object) {
   out <- tryCatch(
     {
@@ -43,6 +75,22 @@ GetAccuracy <- function(object) {
 
 }
 
+#' Gives a summary of the models used in the ModelComparison object
+#'
+#' @param extra a boolean value on whether accuracy values will be returned, if present.
+#' By default this value is TRUE
+#'
+#' @return NULL, only prints out
+#'
+#' @examples
+#' # load the csv file for the dataset "titanic"
+#' titanic <- PrepareNumericTitanic()
+#' # create the ModelComparison object by passing in the training set and training labels
+#' comp <- GetModelComparisons(titanic[, -1], titanic[, 1])
+#' # predict by passing in the new df for the object to predict on
+#' summary(comp)
+#'
+#' @export
 summary.ModelComparison <- function(object, extra=TRUE, ...) {
   start <- "This object is a comparison of the following models:"
   cat(start)
@@ -69,13 +117,23 @@ summary.ModelComparison <- function(object, extra=TRUE, ...) {
   }
 }
 
-#' This function predict on many different machine learning models
-#' @param training.set the dataset to be trained on
-#' @param trainingClasses the labels of the training set
-#' @keywords
-#' @export
+#' Predicts values for a ModelComparison object
+#'
+#' @param object the ModelComparison object whose models will be predicted on
+#' @param newdata a dataframe of new data that the models will use to predict
+#'
+#' @return a list of dataframes, where each dataframe is the predictions from the respective
+#'            model for the two output classes
+#'
 #' @examples
-#' predict()
+#' # load the csv file for the dataset "titanic"
+#' titanic <- PrepareNumericTitanic()
+#' # create the ModelComparison object by passing in the training set and training labels
+#' comp <- GetModelComparisons(titanic[, -1], titanic[, 1])
+#' # predict by passing in the new df for the object to predict on
+#' pred.list <- predict(comp, titanic[, -1])
+#'
+#' @export
 predict.ModelComparison <- function(object, newdata, ...) {
   # # check to see if function is good
   # is.prepped <- sapply(training.data, function(x) (is.numeric(x) || length(levels(x)) <= 2))
@@ -108,6 +166,21 @@ predict.ModelComparison <- function(object, newdata, ...) {
   }
 }
 
+#' A helper function used by the predict function. Since the many types of models are not
+#' uniform in how they are called, this function determines what values to pass into "type"
+#' and then returns the predictions.
+#'
+#' @param model The model to be used for prediction
+#' @param newdata A dataframe for the model to predict on
+#'
+#' @return The predictions for the model on the given data, returned in dataframe format
+#'
+#' @examples
+#' # This function is used by predict.ModelComparison. It's usage is as follows:
+#' pred.basic[[i]] = GetPredType(model, newdata)
+#'
+#' @keywords internal
+#' @export
 GetPredType <- function(model, newdata) {
   if (class(model)[1] == "naiveBayes" || class(model)[1] == "nnet.formula" ||
       class(model)[1] == "nnet") {
@@ -121,6 +194,21 @@ GetPredType <- function(model, newdata) {
   }
 }
 
+#' A helper function used by the GetModelComparison function. If the data given is categorical
+#' and not in one-hot encoding the model training will fail.  This will attempt to conver the
+#' dataset into that format, or, to send an error if it fails to do so.
+#'
+#' @param training.set the training data that is in the wrong format. This is the same dataframe
+#' as in GetModelComparison parameters.
+#'
+#' @return The dataframe in one-hot encoding.
+#'
+#' @examples
+#' # This function is used by GetModelComparison. It's usage is as follows:
+#' training.set = prepData(training.set)
+#'
+#' @keywords internal
+#' @export
 prepData <- function(training.set) {
     out <- tryCatch(
       {
@@ -139,7 +227,27 @@ prepData <- function(training.set) {
   return(out)
 }
 
-
+#' A helper function used by the GetModelComparison function. It will take the given inputs
+#' and build the models for the ModelComparison object.
+#'
+#' @param training.data The training data to build the models.
+#' @param training.classes The labels for the training data.
+#' @param trctrl The trctrl used for the caret package to train the models.
+#' @param tune.length The amound of time to tune to the model. Defaults to 1.
+#' @param multi.class A boolean value of whether the model has multiple classification outputs
+#' @param build.flags A vector of flags that decide what models to build.
+#' @param force.prepared A boolean value describing whether the dataset was forced prepared into
+#' one hot encoding for training.  Only applicable with categorical data
+#'
+#' @return A vector of the models created.
+#'
+#' @examples
+#' # This function is used by GetModelComparison. It's usage is as follows:
+#' modelVec = BuildModels(training.data, training.classes, trctrl,
+#' tune.length, multi.class, build.flags, force.prepared = forced.prepared)
+#'
+#' @keywords internal
+#' @export
 BuildModels <- function(training.data, training.classes, trctrl,
                      tune.length, multi.class, build.flags, force.prepared = F ) {
   modelVec <- list()
@@ -218,7 +326,20 @@ BuildModels <- function(training.data, training.classes, trctrl,
   return(out)
 }
 
-
+#' A helper function used by the GetModelComparison function. It takes the inputs and parses
+#' it to see what models to build
+#'
+#' @param model.list The input parameters from GetModelComparison on what models to create.
+#'
+#' @return A vector of flags that contain what models to build.  To be used in BuildModels
+#' function
+#'
+#' @examples
+#' # This function is used by GetModelComparison. It's usage is as follows:
+#' build.flags <- GetBuildFlags(model.list)
+#'
+#' @keywords internal
+#' @export
 GetBuildFlags <- function(model.list) {
   # Flags include:
   # neuralnet, svmlinear, svmradial, knn, randomforest, glmnet, glm
@@ -283,6 +404,24 @@ GetBuildFlags <- function(model.list) {
   return(flag.vector)
 }
 
+#' A helper function used by the GetModelComparison function. It will take the given inputs
+#' and build the data and trctrl needed to build the models.
+#'
+#' @param training.set The training data to build the models.
+#' @param training.classes.input The labels for the training data.
+#' @param validation The type of model validation: cross-validation ("cv"), or a training
+#' split (in the form XX/XX where XX is a two digit percent).
+#' @param trctrl.given The trctrl given in GetModelComparison parameters for custom training.
+#'
+#' @return A vector containg the following for training the models. It is given in this order:
+#' training.data, training.classes, trctrl
+#'
+#' @examples
+#' # This function is used by GetModelComparison. It's usage is as follows:
+#' training.info <- GetTrainingInfo(training.set, training.classes.input, validation, trctrl)
+#'
+#' @keywords internal
+#' @export
 GetTrainingInfo <- function(training.set, training.classes.input, validation, trctrl.given) {
   # Get the method of validation and prepare testing and training sets
   split <- regmatches(validation, regexpr("[0-9][0-9]/[0-9][0-9]",validation))
@@ -317,14 +456,28 @@ GetTrainingInfo <- function(training.set, training.classes.input, validation, tr
   return(list(training.data, training.classes, trctrl))
 }
 
-#' This function evalutates many different machine learning models and returns those models with comparison charts
-#' @param training.set the dataset to be trained on
-#' @param trainingClasses the labels of the training set
-#' @keywords
-#' @export
+#' A helper function used by the GetModelComparison function. It will take the given inputs
+#' and build the models for the ModelComparison object.
+#'
+#' @param training.set The training data to build the models.
+#' @param training.classes.input The labels for the training data.
+#' @param validation The type of model validation: cross-validation ("cv"), or a training
+#' split (in the form XX/XX where XX is a two digit percent).
+#' @param model.list A vector or list of values TODO:
+#' @param trctrl The trctrl used for the caret package to train the models. Defaults to a basic
+#' version. Used for customized training options including parallelization, etc.
+#'
+#' @return A fully created ModelComparison object.
+#'
 #' @examples
+#' # This function is used by GetModelComparison. It's usage is as follows:
+#' modelVec = BuildModels(training.data, training.classes, trctrl,
+#' tune.length, multi.class, build.flags, force.prepared = forced.prepared)
+#'
+#' @export
 #' GetModelComparisons()
-GetModelComparisons <-function(training.set, training.classes.input, validation="80/20", model.list="fast", trctrl="none") {
+GetModelComparisons <-function(training.set, training.classes.input, validation="80/20",
+                               model.list="fast", trctrl="none") {
   # check to see if function is good
   is.prepped <- sapply(training.set, function(x) (is.numeric(x) || length(levels(x)) <= 2))
 
