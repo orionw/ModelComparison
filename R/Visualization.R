@@ -43,14 +43,15 @@ plot.ModelComparison <- function(object, labels, training.data = "none", predict
     if (sum(is.element(plot.type, "all"))) {
       CreateCombinedPlot(object, pred.basic, labels)
     } else {
-      firstup <- function(x) {
+      simpleCap <- function(x) {
         if (x == "auc") {
-          sapply(plot.type, toupper)
-        } else {
-        substr(x, 1, 1) <- toupper(substr(x, 1, 1))
+          return(sapply(plot.type, toupper))
         }
+        s <- strsplit(x, " ")[[1]]
+        return(paste(toupper(substring(s, 1,1)), substring(s, 2),
+              sep="", collapse=" "))
       }
-      firstup(plot.type)
+      plot.type <- sapply(plot.type, simpleCap)
       CreateCombinedPlot(object, pred.basic, labels, plot.type)
     }
   } else {
