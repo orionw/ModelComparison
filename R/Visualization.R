@@ -36,12 +36,21 @@ plot.ModelComparison <- function(object, labels, training.data = "none", predict
   }
 
   ## Plot the chosen type
-  if (length(plot.type) == 1 && plot.type == c("ROC")) {
+  plot.type = sapply(plot.type, tolower)
+  if (length(plot.type) == 1 && plot.type == c("roc")) {
     CreateROCPlot(object, pred.basic, labels)
   } else if (class(plot.type) == "character") {
-    if (sum(is.element(plot.type, "All"))) {
+    if (sum(is.element(plot.type, "all"))) {
       CreateCombinedPlot(object, pred.basic, labels)
     } else {
+      firstup <- function(x) {
+        if (x == "auc") {
+          sapply(plot.type, toupper)
+        } else {
+        substr(x, 1, 1) <- toupper(substr(x, 1, 1))
+        }
+      }
+      firstup(plot.type)
       CreateCombinedPlot(object, pred.basic, labels, plot.type)
     }
   } else {
@@ -61,7 +70,7 @@ CreateROCPlot <- function(object, pred.basic, labels) {
       i = i + 1
       if (!is.null(model)) {
         # if given in dataframe format, reduce to vector
-        if (class(pred.basic[[i]]) == "data.frame") {
+        if (class(pred.basic[[i]]) == "data.frame" || class(pred.basic[[i]]) == "matrix") {
           pred.basic[[i]] <- pred.basic[[i]][, 1]
         }
         if (i == 1) {
@@ -75,7 +84,7 @@ CreateROCPlot <- function(object, pred.basic, labels) {
           plot(roc.plot, add = T, col = colorPal[i])
         }
       }
-      legend("topright", title="Model Type", legend=names(object$model.list),
+      legend("topright", legend=names(object$model.list),
              col=colorPal, lty=1:2, cex=0.8)
     }
   }

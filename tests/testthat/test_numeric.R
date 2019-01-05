@@ -72,6 +72,6 @@ test_that("MVP on more complex dataset", {
 #   names(different_list) <- c("Random", "Stuff")
 #   different_list = rev(different_list)
 #   # plot list of models and see if the conversion works
-#   comp_model = convertToComparison(different_list, multi_class = F)
+#   comp_model = ModelComparison(different_list, multi_class = F)
 #   plot(comp_model, iris_ready[,1:4], iris_ready[,5] )
 # })

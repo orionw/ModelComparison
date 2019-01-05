@@ -1,5 +1,5 @@
 #' ModelComparisons()
-ModelComparison <- function(model.list, multi.class, force.prepped, diff.names=NULL) {
+CreateModelComparison <- function(model.list, multi.class, force.prepped, diff.names=NULL) {
   # we can add our own integrity checks
   comparison <- list()
   if (class(diff.names) == "NULL") {
@@ -19,18 +19,28 @@ ModelComparison <- function(model.list, multi.class, force.prepped, diff.names=N
 }
 
 GetAccuracy <- function(object) {
-  accuracy.list <- list()
-  i = 0
-  for (model in object$model.list) {
-    if (class(model) == "Ensemble") {
-      # TODO implement this
+  out <- tryCatch(
+    {
+      accuracy.list <- list()
+      i = 0
+      for (model in object$model.list) {
+        if (class(model)[[1]] == "Ensemble") {
+          # TODO implement this
+          return(NULL)
+        }
+        i = i + 1
+        accuracy.list[[i]] <- model$results["Accuracy"]
+      }
+      names(accuracy.list) <- names(object$model.list)
+      return(accuracy.list)
+    },
+    error=function(cond) {
+      # model's accuracy was not given
       return(NULL)
     }
-    i = i + 1
-    accuracy.list[[i]] <- model$results["Accuracy"]
-  }
-  names(accuracy.list) <- names(object$model.list)
-  return(accuracy.list)
+  )
+  return(out)
+
 }
 
 summary.ModelComparison <- function(object, extra=TRUE, ...) {
@@ -92,9 +102,22 @@ predict.ModelComparison <- function(object, newdata, ...) {
     pred.basic <- list()
     for (model in object$model.list) {
       i = i + 1
-      pred.basic[[i]] <- predict(model, newdata, type="prob")
+      pred.basic[[i]] = GetPredType(model, newdata)
     }
     return(pred.basic)
+  }
+}
+
+GetPredType <- function(model, newdata) {
+  if (class(model)[1] == "naiveBayes" || class(model)[1] == "nnet.formula" ||
+      class(model)[1] == "nnet") {
+    return(predict(model, newdata, type="raw", prob=TRUE))
+
+  } else if (class(model)[[1]] == "lognet" || class(model)[[1]] == "glmnet") {
+    return (predict(model, data.matrix(newdata), type="response", prob=TRUE))
+
+  } else {
+    return (predict(model, newdata, type="prob", prob=TRUE))
   }
 }
 
@@ -330,15 +353,14 @@ GetModelComparisons <-function(training.set, training.classes.input, validation=
 
   modelVec = BuildModels(training.data, training.classes, trctrl,
                        tune.length, multi.class, build.flags, force.prepared = forced.prepared)
-  modelComp <- ModelComparison(modelVec, multi.class, forced.prepared)
+  modelComp <- CreateModelComparison(modelVec, multi.class, forced.prepared)
   return(modelComp)
 
 }
 
-
-convertToComparison <- function(model.list, multi.class) {
+ModelComparison <- function(model.list, multi.class) {
   if (anyNA(model.list) || anyNA(names(model.list))) {
     stop("One of the models or model names is NA.  Please fix that and try again")
   }
-  return (ModelComparison(model.list, multi.class, F, names(model.list)))
+  return (CreateModelComparison(model.list, multi.class, F, names(model.list)))
 }

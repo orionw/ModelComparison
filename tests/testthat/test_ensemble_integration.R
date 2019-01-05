@@ -18,7 +18,7 @@ test_that("Ensemble used in a ModelComparison", {
   # put them in a named list for the comparison
   mlist <- list(ensem1, ensem2, ensem3)
   names(mlist) <- c("Ensemble1", "Ensemble2", "Ensemble3")
-  comp <- convertToComparison(mlist, F)
+  comp <- ModelComparison(mlist, F)
   expect_equal(class(comp), "ModelComparison")
   # make sure plot works
   print(plot(comp, iris[, 5], iris[,1:4]))
