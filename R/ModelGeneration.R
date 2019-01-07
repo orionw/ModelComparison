@@ -456,23 +456,27 @@ GetTrainingInfo <- function(training.set, training.classes.input, validation, tr
   return(list(training.data, training.classes, trctrl))
 }
 
-#' A helper function used by the GetModelComparison function. It will take the given inputs
-#' and build the models for the ModelComparison object.
+#' A function to build and return a ModelComparison object. This function does not take any
+#' pre-built models, instead it creates them based on input to model.list.
 #'
 #' @param training.set The training data to build the models.
 #' @param training.classes.input The labels for the training data.
 #' @param validation The type of model validation: cross-validation ("cv"), or a training
 #' split (in the form XX/XX where XX is a two digit percent).
-#' @param model.list A vector or list of values TODO:
+#' @param model.list A vector or list of characters that describe what models to build.
+#' Models include "neuralnet", "svmlinear", "svmradial", "knn", "randomforest", 'glmnet",
+#' and 'glm." Keywords include "fast" (glmnet, svmlinear), "all", and "expensive"
+#' (neuralnet, svmradial, glmnet, and randomforest)
 #' @param trctrl The trctrl used for the caret package to train the models. Defaults to a basic
 #' version. Used for customized training options including parallelization, etc.
 #'
 #' @return A fully created ModelComparison object.
 #'
 #' @examples
-#' # This function is used by GetModelComparison. It's usage is as follows:
-#' modelVec = BuildModels(training.data, training.classes, trctrl,
-#' tune.length, multi.class, build.flags, force.prepared = forced.prepared)
+#' titanic <- PrepareNumericTitanic()
+#' # create the models
+#' comp <- GetModelComparisons(titanic[, -1], titanic[, 1], validation="80/20",
+#'                             model.list="fast")
 #'
 #' @export
 #' GetModelComparisons()
@@ -511,6 +515,21 @@ GetModelComparisons <-function(training.set, training.classes.input, validation=
 
 }
 
+#' A function to return a ModelComparison object. This function take pre-built models, and puts
+#' them into a ModelComparison object.
+#'
+#' @param model.list The training data to build the models.
+#' @param multi.class A boolean of whether the models predict a multi-outcome response
+#'
+#' @return A ModelComparison object.
+#'
+#' @examples
+#' models <- list(model1, model2, model3)
+#' names(models) <- c("NeuralNet", "K-NN", "SVM")
+#' comp <- ModelComparison(models, F)
+#'
+#' @export
+#' ModelComparison()
 ModelComparison <- function(model.list, multi.class) {
   if (anyNA(model.list) || anyNA(names(model.list))) {
     stop("One of the models or model names is NA.  Please fix that and try again")

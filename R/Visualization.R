@@ -1,12 +1,27 @@
-#' This function evalutates many different machine learning models and returns those models with comparison charts
-#' @param trainingSet the dataset to be trained on
-#' @param trainingClasses the labels of the training set
-#' @param plot.type A vector of characters that are the values seen in the plot
+#' This function evalutates many different machine learning models and returns plots comparing
+#' them.
+#' @param object The ModelComparison object
+#' @param labels The labels of the training set
+#' @param training.data The dataset to be trained on. If predictions are provided this is not
+#' needed.
+#' @param predictions The list of predictions from the models, optional if training.data is not
+#' provided.
+#' @param plot.type A vector of metrics (as characters) that are the values seen in the plot
 #' (examples include ROC, AUC, Accuracy, etc.)  Note: ROC cannot be plotted with other metrics.
 #' @keywords
 #' @export
 #' @examples
-#' plot()
+#' # prepare the dataset
+#' titanic <- PrepareNumericTitanic()
+#' # create the models
+#' comp <- GetModelComparisons(titanic[, -1], titanic[, 1], model.list = "all")
+#' # Default.  Plot AUC, Accuracy, Recall, and Precision
+#' plot(comp, titanic[, 1], titanic[, -1], plot.type=c("All"))
+#' # Choose specific metrics
+#' plot(comp, titanic[, 1], titanic[, -1], plot.type=c("Specificity", "Precision", "AUC",
+#' "Recall", "Detection Rate"))
+#' # plot overlapping ROC lines
+#' plot(comp, titanic[, 1], titanic[, -1], plot.type="roc")
 plot.ModelComparison <- function(object, labels, training.data = "none", predictions="empty", plot.type="ROC", ...) {
   # error check the arguments
   if (class(training.data) != "data.frame" && training.data == "none") {
@@ -59,7 +74,20 @@ plot.ModelComparison <- function(object, labels, training.data = "none", predict
   }
 }
 
-
+#' A helper function used by the plot.ModelComparison.  This function gathers the data needed
+#' for the ROC lines and then plots the chart.
+#'
+#' @param object The ModelComparison object.
+#' @param pred.basic The predictions from the models on the testing data.
+#' @param labels The labels for the testing data.
+#'
+#' @return NULL
+#'
+#' @examples
+#' # This function is used by plot.ModelComparison. It's usage is as follows:
+#'  CreateROCPlot(object, pred.basic, labels)
+#' @keywords internal
+#' @export
 CreateROCPlot <- function(object, pred.basic, labels) {
   if (object$.multi.class == TRUE) {
     # do stuff later TODO
@@ -91,7 +119,22 @@ CreateROCPlot <- function(object, pred.basic, labels) {
   }
 }
 
-
+#' A helper function used by the plot.ModelComparison.  This function gathers the data needed
+#' for many types of metrics and then plots the chart.
+#'
+#' @param object The ModelComparison object.
+#' @param pred.basic The predictions from the models on the testing data.
+#' @param labels The labels for the testing data.
+#'
+#' @return NULL
+#'
+#' @examples
+#' # This function is used by plot.ModelComparison. It's usage is as follows:
+#'  CreateCombinedPlot(object, pred.basic, labels)
+#'  # or given specific metrics for Accuracy and AUC:
+#'  CreateCombinedPlot(object, pred.basic, labels, c("Accuracy", "AUC"))
+#' @keywords internal
+#' @export
 CreateCombinedPlot <- function(object, pred.basic, labels,
                                metrics.for.plot = c("Accuracy", "Recall", "AUC", "Precision")) {
   metric.list = list()

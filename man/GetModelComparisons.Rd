@@ -2,19 +2,39 @@
 % Please edit documentation in R/ModelGeneration.R
 \name{GetModelComparisons}
 \alias{GetModelComparisons}
-\title{This function evalutates many different machine learning models and returns those models with comparison charts}
+\title{A function to build and return a ModelComparison object. This function does not take any
+pre-built models, instead it creates them based on input to model.list.}
 \usage{
 GetModelComparisons(training.set, training.classes.input,
   validation = "80/20", model.list = "fast", trctrl = "none")
 }
 \arguments{
-\item{training.set}{the dataset to be trained on}
+\item{training.set}{The training data to build the models.}
 
-\item{trainingClasses}{the labels of the training set}
+\item{training.classes.input}{The labels for the training data.}
+
+\item{validation}{The type of model validation: cross-validation ("cv"), or a training
+split (in the form XX/XX where XX is a two digit percent).}
+
+\item{model.list}{A vector or list of characters that describe what models to build.
+Models include "neuralnet", "svmlinear", "svmradial", "knn", "randomforest", 'glmnet",
+and 'glm." Keywords include "fast" (glmnet, svmlinear), "all", and "expensive"
+(neuralnet, svmradial, glmnet, and randomforest)}
+
+\item{trctrl}{The trctrl used for the caret package to train the models. Defaults to a basic
+version. Used for customized training options including parallelization, etc.}
+}
+\value{
+A fully created ModelComparison object.
 }
 \description{
-This function evalutates many different machine learning models and returns those models with comparison charts
+A function to build and return a ModelComparison object. This function does not take any
+pre-built models, instead it creates them based on input to model.list.
 }
 \examples{
-GetModelComparisons()
+titanic <- PrepareNumericTitanic()
+# create the models
+comp <- GetModelComparisons(titanic[, -1], titanic[, 1], validation="80/20",
+                            model.list="fast")
+
 }

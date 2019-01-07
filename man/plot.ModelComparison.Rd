@@ -2,22 +2,40 @@
 % Please edit documentation in R/Visualization.R
 \name{plot.ModelComparison}
 \alias{plot.ModelComparison}
-\title{This function evalutates many different machine learning models and returns those models with comparison charts}
+\title{This function evalutates many different machine learning models and returns plots comparing
+them.}
 \usage{
 \method{plot}{ModelComparison}(object, labels, training.data = "none",
   predictions = "empty", plot.type = "ROC", ...)
 }
 \arguments{
-\item{plot.type}{A vector of characters that are the values seen in the plot
+\item{object}{The ModelComparison object}
+
+\item{labels}{The labels of the training set}
+
+\item{training.data}{The dataset to be trained on. If predictions are provided this is not
+needed.}
+
+\item{predictions}{The list of predictions from the models, optional if training.data is not
+provided.}
+
+\item{plot.type}{A vector of metrics (as characters) that are the values seen in the plot
 (examples include ROC, AUC, Accuracy, etc.)  Note: ROC cannot be plotted with other metrics.}
-
-\item{trainingSet}{the dataset to be trained on}
-
-\item{trainingClasses}{the labels of the training set}
 }
 \description{
-This function evalutates many different machine learning models and returns those models with comparison charts
+This function evalutates many different machine learning models and returns plots comparing
+them.
 }
 \examples{
-plot()
+# prepare the dataset
+titanic <- PrepareNumericTitanic()
+# create the models
+comp <- GetModelComparisons(titanic[, -1], titanic[, 1], model.list = "all")
+# Default.  Plot AUC, Accuracy, Recall, and Precision
+plot(comp, titanic[, 1], titanic[, -1], plot.type=c("All"))
+# Choose specific metrics
+plot(comp, titanic[, 1], titanic[, -1], plot.type=c("Specificity", "Precision", "AUC",
+"Recall", "Detection Rate"))
+# plot overlapping ROC lines
+plot(comp, titanic[, 1], titanic[, -1], plot.type="roc")
 }
