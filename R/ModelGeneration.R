@@ -117,13 +117,13 @@ summary.ModelComparison <- function(object, extra=TRUE, ...) {
   }
 }
 
-#' Predicts values for a ModelComparison object
+#' Predicts values for a ModelComparison object.
 #'
-#' @param object the ModelComparison object whose models will be predicted on
-#' @param newdata a dataframe of new data that the models will use to predict
+#' @param object The ModelComparison object whose models will be predicted on.
+#' @param newdata A dataframe of new data that the models will use to predict.
 #'
-#' @return a list of dataframes, where each dataframe is the predictions from the respective
-#'            model for the two output classes
+#' @return A list of dataframes, where each dataframe is the predictions from the respective
+#'            model for the two output classes.
 #'
 #' @examples
 #' # load the csv file for the dataset "titanic"

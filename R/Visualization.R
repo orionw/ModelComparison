@@ -8,7 +8,6 @@
 #' provided.
 #' @param plot.type A vector of metrics (as characters) that are the values seen in the plot
 #' (examples include ROC, AUC, Accuracy, etc.)  Note: ROC cannot be plotted with other metrics.
-#' @keywords
 #' @export
 #' @examples
 #' # prepare the dataset

@@ -2,21 +2,21 @@
 % Please edit documentation in R/ModelGeneration.R
 \name{predict.ModelComparison}
 \alias{predict.ModelComparison}
-\title{Predicts values for a ModelComparison object}
+\title{Predicts values for a ModelComparison object.}
 \usage{
 \method{predict}{ModelComparison}(object, newdata, ...)
 }
 \arguments{
-\item{object}{the ModelComparison object whose models will be predicted on}
+\item{object}{The ModelComparison object whose models will be predicted on.}
 
-\item{newdata}{a dataframe of new data that the models will use to predict}
+\item{newdata}{A dataframe of new data that the models will use to predict.}
 }
 \value{
-a list of dataframes, where each dataframe is the predictions from the respective
-           model for the two output classes
+A list of dataframes, where each dataframe is the predictions from the respective
+           model for the two output classes.
 }
 \description{
-Predicts values for a ModelComparison object
+Predicts values for a ModelComparison object.
 }
 \examples{
 # load the csv file for the dataset "titanic"

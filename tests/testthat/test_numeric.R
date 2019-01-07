@@ -7,15 +7,6 @@ library(ggplot2)
 library(BestModel)
 library(caret)
 
-PrepareNumericTitanic <- function() {
-  titanic <- read.csv("~/BestModel/tests/testthat/titanic.csv")
-  titanic <- titanic[, c("Survived", "Age",
-                            "Siblings.Spouses.Aboard", "Parents.Children.Aboard", "Fare")]
-  titanic$Survived = as.factor(titanic$Survived)
-  levels(titanic$Survived) <- c("died", "survived")
-  return(titanic)
-}
-
 test_that("Retured object has the correct structure", {
   # prepare the dataset
   titanic <- PrepareNumericTitanic()
