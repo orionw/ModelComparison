@@ -13,6 +13,8 @@
 #' @param format.data Whether the data should be transformed into one-hot encoding if it needs
 #' to be. The default is TRUE. If you would like to predict on unchanged data that is not
 #' in the right format, set this to false at your own risk.
+#' @param ... Other arguments for plotting
+
 #' @export
 #' @examples
 #' # prepare the dataset
@@ -96,7 +98,7 @@ plot.ModelComparison <- function(object, labels, training.data = "none", predict
 #'
 #' @examples
 #' # This function is used by plot.ModelComparison. It's usage is as follows:
-#'  CreateROCPlot(object, pred.basic, labels)
+#' # CreateROCPlot(object, pred.basic, labels)
 #' @keywords internal
 #' @export
 CreateROCPlot <- function(object, pred.basic, labels) {
@@ -141,9 +143,9 @@ CreateROCPlot <- function(object, pred.basic, labels) {
 #'
 #' @examples
 #' # This function is used by plot.ModelComparison. It's usage is as follows:
-#'  CreateCombinedPlot(object, pred.basic, labels)
-#'  # or given specific metrics for Accuracy and AUC:
-#'  CreateCombinedPlot(object, pred.basic, labels, c("Accuracy", "AUC"))
+#' #  CreateCombinedPlot(object, pred.basic, labels)
+#' # or given specific metrics for Accuracy and AUC:
+#' #  CreateCombinedPlot(object, pred.basic, labels, c("Accuracy", "AUC"))
 #' @keywords internal
 #' @export
 CreateCombinedPlot <- function(object, pred.basic, labels,
@@ -166,9 +168,9 @@ CreateCombinedPlot <- function(object, pred.basic, labels,
           dataScaled <- predict(preProcValues, ind.pred)
           # remove the matrix form
           ind.pred <- c(dataScaled)
-          value.list[[i]] = pROC:::auc(labels, ind.pred)[[1]]
+          value.list[[i]] = pROC::auc(labels, ind.pred)[[1]]
         } else {
-          value.list[[i]] = pROC:::auc(labels, ind.pred[, 1])[[1]]
+          value.list[[i]] = pROC::auc(labels, ind.pred[, 1])[[1]]
         }
       } else {
         if (names(pred.basic)[[i]] == "svm.formula") {
@@ -231,8 +233,8 @@ CreateCombinedPlot <- function(object, pred.basic, labels,
 #' @return The predictions, with only two factors.
 #'
 #' @examples
-#' As used in GetCombinedPlot:
-#' pred <- GetSVMScale(pred)
+#' # As used in GetCombinedPlot:
+#' # pred <- GetSVMScale(pred)
 #'
 #' @keywords internal
 #' @export

@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{object}{The Ensemble object to be summarized.}
+
+\item{...}{Other arguments, if needed}
 }
 \value{
 NULL, only prints out

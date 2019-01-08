@@ -26,7 +26,7 @@ and pull the metric from the data.
 }
 \examples{
 # This function is used by Ensemble. It's usage is as follows:
-return(GetWeightsFromTestingSet(ensemble, weights, test.set, train.type))
+# return(GetWeightsFromTestingSet(ensemble, weights, test.set, train.type))
 
 }
 \keyword{internal}

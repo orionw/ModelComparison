@@ -14,8 +14,8 @@
 #'
 #' @examples
 #' # This function is used by GetModelComparison and ModelComparison to create the
-#' ModelComparison object. The follow code is what is used by ModelComparison:
-#' CreateModelComparison(model.list, multi.class, F, names(model.list))
+#' # ModelComparison object. The follow code is what is used by ModelComparison:
+#' # CreateModelComparison(model.list, multi.class, F, names(model.list))
 #'
 #' @keywords internal
 #' @export
@@ -46,7 +46,7 @@ CreateModelComparison <- function(model.list, multi.class, force.prepped, diff.n
 #'
 #' @examples
 #' # see the CreateModelComparison function for it's use as follows:
-#'   comparison$accuracy.list <- GetAccuracy(comparison)
+#' #  comparison$accuracy.list <- GetAccuracy(comparison)
 #'
 #' @keywords internal
 #' @export
@@ -79,6 +79,7 @@ GetAccuracy <- function(object) {
 #'
 #' @param extra a boolean value on whether accuracy values will be returned, if present.
 #' By default this value is TRUE
+#' @param ... Other arguments, if needed
 #'
 #' @return NULL, only prints out
 #'
@@ -121,6 +122,7 @@ summary.ModelComparison <- function(object, extra=TRUE, ...) {
 #'
 #' @param object The ModelComparison object whose models will be predicted on.
 #' @param newdata A dataframe of new data that the models will use to predict.
+#' @param ... Other arguments, if needed
 #'
 #' @return A list of dataframes, where each dataframe is the predictions from the respective
 #'            model for the two output classes.
@@ -179,7 +181,7 @@ predict.ModelComparison <- function(object, newdata, ...) {
 #'
 #' @examples
 #' # This function is used by predict.ModelComparison. It's usage is as follows:
-#' pred.basic[[i]] = GetPredType(model, newdata)
+#' # pred.basic[[i]] = GetPredType(model, newdata)
 #'
 #' @keywords internal
 #' @export
@@ -213,7 +215,7 @@ GetPredType <- function(model, newdata) {
 #'
 #' @examples
 #' # This function is used by GetModelComparison. It's usage is as follows:
-#' training.set = prepData(training.set)
+#' # training.set = prepData(training.set)
 #'
 #' @keywords internal
 #' @export
@@ -250,8 +252,8 @@ prepData <- function(training.set) {
 #'
 #' @examples
 #' # This function is used by GetModelComparison. It's usage is as follows:
-#' modelVec = BuildModels(training.data, training.classes, trctrl,
-#' tune.length, multi.class, build.flags, force.prepared = forced.prepared)
+#' # modelVec = BuildModels(training.data, training.classes, trctrl,
+#' #            tune.length, multi.class, build.flags, force.prepared = forced.prepared)
 #'
 #' @keywords internal
 #' @export
@@ -360,7 +362,7 @@ BuildModels <- function(training.data, training.classes, trctrl,
 #'
 #' @examples
 #' # This function is used by GetModelComparison. It's usage is as follows:
-#' build.flags <- GetBuildFlags(model.list)
+#' # build.flags <- GetBuildFlags(model.list)
 #'
 #' @keywords internal
 #' @export
@@ -443,7 +445,7 @@ GetBuildFlags <- function(model.list) {
 #'
 #' @examples
 #' # This function is used by GetModelComparison. It's usage is as follows:
-#' training.info <- GetTrainingInfo(training.set, training.classes.input, validation, trctrl)
+#' # training.info <- GetTrainingInfo(training.set, training.classes.input, validation, trctrl)
 #'
 #' @keywords internal
 #' @export

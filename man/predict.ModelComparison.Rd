@@ -10,6 +10,8 @@
 \item{object}{The ModelComparison object whose models will be predicted on.}
 
 \item{newdata}{A dataframe of new data that the models will use to predict.}
+
+\item{...}{Other arguments, if needed}
 }
 \value{
 A list of dataframes, where each dataframe is the predictions from the respective

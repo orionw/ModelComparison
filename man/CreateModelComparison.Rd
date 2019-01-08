@@ -30,8 +30,8 @@ ModelComparison object. It gives the object it's class and assigns it it's membe
 }
 \examples{
 # This function is used by GetModelComparison and ModelComparison to create the
-ModelComparison object. The follow code is what is used by ModelComparison:
-CreateModelComparison(model.list, multi.class, F, names(model.list))
+# ModelComparison object. The follow code is what is used by ModelComparison:
+# CreateModelComparison(model.list, multi.class, F, names(model.list))
 
 }
 \keyword{internal}

@@ -20,6 +20,6 @@ for the ROC lines and then plots the chart.
 }
 \examples{
 # This function is used by plot.ModelComparison. It's usage is as follows:
- CreateROCPlot(object, pred.basic, labels)
+# CreateROCPlot(object, pred.basic, labels)
 }
 \keyword{internal}

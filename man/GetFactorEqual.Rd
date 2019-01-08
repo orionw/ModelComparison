@@ -17,7 +17,7 @@ A quick helper function to flip the factors of 0's and 1's
 }
 \examples{
 # This function is used by GetWeightsFromTestSet It's usage is as follows:
-test.set <- GetFactorEqual(test.set)
+# test.set <- GetFactorEqual(test.set)
 
 }
 \keyword{internal}

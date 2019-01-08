@@ -17,7 +17,7 @@ Each model returns the prediction as a DataFrame and we need it as a list or vec
 }
 \examples{
 # This function is used by predict.Ensemble. It's usage is as follows:
-preds[[i]] <-  StripPredictions(predict(model, newdata = newdata, type="prob"))
+# preds[[i]] <-  StripPredictions(predict(model, newdata = newdata, type="prob"))
 
 }
 \keyword{internal}

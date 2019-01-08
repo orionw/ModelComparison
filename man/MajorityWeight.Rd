@@ -22,7 +22,7 @@ type is the same as this function name.
 }
 \examples{
 # This function is used by predict.Ensemble. It's usage is as follows:
-MajorityWeight(preds, Ensemble$weights)
+# MajorityWeight(preds, Ensemble$weights)
 
 }
 \keyword{internal}

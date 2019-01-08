@@ -33,8 +33,8 @@ and build the models for the ModelComparison object.
 }
 \examples{
 # This function is used by GetModelComparison. It's usage is as follows:
-modelVec = BuildModels(training.data, training.classes, trctrl,
-tune.length, multi.class, build.flags, force.prepared = forced.prepared)
+# modelVec = BuildModels(training.data, training.classes, trctrl,
+#            tune.length, multi.class, build.flags, force.prepared = forced.prepared)
 
 }
 \keyword{internal}

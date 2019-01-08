@@ -8,7 +8,7 @@
 #'
 #' @examples
 #' # This function is used by predict.Ensemble. It's usage is as follows:
-#' preds[[i]] <-  StripPredictions(predict(model, newdata = newdata, type="prob"))
+#' # preds[[i]] <-  StripPredictions(predict(model, newdata = newdata, type="prob"))
 #'
 #' @keywords internal
 #' @export
@@ -29,6 +29,8 @@ StripPredictions <- function(pred) {
 #' Gives a summary of the models used in the Ensemble object
 #'
 #' @param object The Ensemble object to be summarized.
+#' @param ... Other arguments, if needed
+
 #'
 #' @return NULL, only prints out
 #'
@@ -64,6 +66,7 @@ summary.Ensemble <- function(object, ...) {
 #' @param voting.type The way that the Ensemble will vote - default is what was given
 #' at creation of the object but it can be overriden by passing in "averageVote", "majorityVote"
 #' or "majorityWeight."
+#' @param ... Other arguments, if needed
 #'
 #' @return a list of predictions, voted on by all the models into one final prediction.
 #'
@@ -123,7 +126,7 @@ predict.Ensemble <- function(object, newdata, voting.type="default", ...) {
 #'
 #' @examples
 #' # This function is used by predict.Ensemble. It's usage is as follows:
-#' MajorityVote(preds)
+#' # MajorityVote(preds)
 #'
 #' @keywords internal
 #' @export
@@ -161,7 +164,7 @@ MajorityVote <- function(list.of.predictions){
 #'
 #' @examples
 #' # This function is used by predict.Ensemble. It's usage is as follows:
-#' MajorityWeight(preds, Ensemble$weights)
+#' # MajorityWeight(preds, Ensemble$weights)
 #'
 #' @keywords internal
 #' @export
@@ -206,7 +209,7 @@ MajorityWeight <- function(list.of.predictions, weight.list){
 #'
 #' @examples
 #' # This function is used by predict.Ensemble. It's usage is as follows:
-#' AverageVote(preds)
+#' # AverageVote(preds)
 #'
 #' @keywords internal
 #' @export
@@ -249,7 +252,7 @@ AverageVote <- function(list.of.predictions){
 #'
 #' @examples
 #' # This function is used by GetWeightsFromTestSet It's usage is as follows:
-#' test.set <- GetFactorEqual(test.set)
+#' # test.set <- GetFactorEqual(test.set)
 #'
 #' @keywords internal
 #' @export
@@ -281,7 +284,7 @@ GetFactorEqual <- function(pred) {
 #'
 #' @examples
 #' # This function is used by Ensemble. It's usage is as follows:
-#' return(GetWeightsFromTestingSet(ensemble, weights, test.set, train.type))
+#' # return(GetWeightsFromTestingSet(ensemble, weights, test.set, train.type))
 #'
 #' @keywords internal
 #' @export
@@ -327,7 +330,7 @@ GetWeightsFromTestingSet <- function(ensemble, df.train, test.set, train.type) {
 #'
 #' @examples
 #' # This function is used by Ensemble. It's usage is as follows:
-#' ensemble$weight.list = GetModelWeights(ensemble, weights, test.set, train.type)
+#' # ensemble$weight.list = GetModelWeights(ensemble, weights, test.set, train.type)
 #'
 #' @keywords internal
 #' @export

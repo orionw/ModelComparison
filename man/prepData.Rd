@@ -9,8 +9,8 @@ dataset into that format, or, to send an error if it fails to do so.}
 prepData(training.set)
 }
 \arguments{
-\item{training.set}{the training data that is in the wrong format. This is the same dataframe
-as in GetModelComparison parameters.}
+\item{training.set}{the training data that is in the wrong format. This is the same
+dataframe as in GetModelComparison parameters.}
 }
 \value{
 The dataframe in one-hot encoding.
@@ -22,7 +22,7 @@ dataset into that format, or, to send an error if it fails to do so.
 }
 \examples{
 # This function is used by GetModelComparison. It's usage is as follows:
-training.set = prepData(training.set)
+# training.set = prepData(training.set)
 
 }
 \keyword{internal}

@@ -20,7 +20,7 @@ type is the same as this function name.
 }
 \examples{
 # This function is used by predict.Ensemble. It's usage is as follows:
-AverageVote(preds)
+# AverageVote(preds)
 
 }
 \keyword{internal}

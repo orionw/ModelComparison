@@ -29,7 +29,7 @@ cases and error checking and calls another function to get the weights data.
 }
 \examples{
 # This function is used by Ensemble. It's usage is as follows:
-ensemble$weight.list = GetModelWeights(ensemble, weights, test.set, train.type)
+# ensemble$weight.list = GetModelWeights(ensemble, weights, test.set, train.type)
 
 }
 \keyword{internal}

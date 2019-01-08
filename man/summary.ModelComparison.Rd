@@ -9,6 +9,8 @@
 \arguments{
 \item{extra}{a boolean value on whether accuracy values will be returned, if present.
 By default this value is TRUE}
+
+\item{...}{Other arguments, if needed}
 }
 \value{
 NULL, only prints out

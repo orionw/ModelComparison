@@ -17,8 +17,8 @@ SVM predictions are often greater than 1 or less than 0. We need to round them t
 have only two factors
 }
 \examples{
-As used in GetCombinedPlot:
-pred <- GetSVMScale(pred)
+# As used in GetCombinedPlot:
+# pred <- GetSVMScale(pred)
 
 }
 \keyword{internal}

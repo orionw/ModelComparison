@@ -26,7 +26,7 @@ It takes the given inputs, data, and trctrl needed to build the models.
 }
 \examples{
 # This function is used by GetModelComparison. It's usage is as follows:
-training.info <- GetTrainingInfo(training.set, training.classes.input, validation, trctrl)
+# training.info <- GetTrainingInfo(training.set, training.classes.input, validation, trctrl)
 
 }
 \keyword{internal}

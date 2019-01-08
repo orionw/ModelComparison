@@ -21,8 +21,8 @@ for many types of metrics and then plots the chart.
 }
 \examples{
 # This function is used by plot.ModelComparison. It's usage is as follows:
- CreateCombinedPlot(object, pred.basic, labels)
- # or given specific metrics for Accuracy and AUC:
- CreateCombinedPlot(object, pred.basic, labels, c("Accuracy", "AUC"))
+#  CreateCombinedPlot(object, pred.basic, labels)
+# or given specific metrics for Accuracy and AUC:
+#  CreateCombinedPlot(object, pred.basic, labels, c("Accuracy", "AUC"))
 }
 \keyword{internal}

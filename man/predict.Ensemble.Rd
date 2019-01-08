@@ -14,6 +14,8 @@
 \item{voting.type}{The way that the Ensemble will vote - default is what was given
 at creation of the object but it can be overriden by passing in "averageVote", "majorityVote"
 or "majorityWeight."}
+
+\item{...}{Other arguments, if needed}
 }
 \value{
 a list of predictions, voted on by all the models into one final prediction.

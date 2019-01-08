@@ -23,7 +23,7 @@ and then returns the predictions.
 }
 \examples{
 # This function is used by predict.ModelComparison. It's usage is as follows:
-pred.basic[[i]] = GetPredType(model, newdata)
+# pred.basic[[i]] = GetPredType(model, newdata)
 
 }
 \keyword{internal}

@@ -24,6 +24,8 @@ provided.}
 \item{format.data}{Whether the data should be transformed into one-hot encoding if it needs
 to be. The default is TRUE. If you would like to predict on unchanged data that is not
 in the right format, set this to false at your own risk.}
+
+\item{...}{Other arguments for plotting}
 }
 \description{
 This function evalutates many different machine learning models and returns plots comparing

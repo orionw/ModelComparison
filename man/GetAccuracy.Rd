@@ -17,7 +17,7 @@ Gives a summary of the models used in the ModelComparison object
 }
 \examples{
 # see the CreateModelComparison function for it's use as follows:
-  comparison$accuracy.list <- GetAccuracy(comparison)
+#  comparison$accuracy.list <- GetAccuracy(comparison)
 
 }
 \keyword{internal}

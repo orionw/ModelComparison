@@ -20,7 +20,7 @@ it to see what models to build
 }
 \examples{
 # This function is used by GetModelComparison. It's usage is as follows:
-build.flags <- GetBuildFlags(model.list)
+# build.flags <- GetBuildFlags(model.list)
 
 }
 \keyword{internal}
