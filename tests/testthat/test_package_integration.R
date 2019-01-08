@@ -19,9 +19,11 @@ test_that("Other packages used for ModelComparison", {
   titanic$Survived
   # create the models
   library(e1071)
-  naive.bayes = e1071::naiveBayes(as.factor(Survived)~., threshold = 0.001, eps = 5, data=titanic)
+  naive.bayes = e1071::naiveBayes(as.factor(Survived)~., threshold = 0.001, eps = 5,
+                                  data=titanic)
   library(randomForest)
-  rforest = randomForest(formula = as.factor(Survived)~., data = titanic, type=raw, cutoff=c(.45, .55))
+  rforest = randomForest(formula = as.factor(Survived)~., data = titanic, type=raw,
+                         cutoff=c(.45, .55))
   library(nnet)
   capture.output(neural.net <- nnet(as.factor(Survived) ~ ., data=titanic,
                                     size=10,decay=5e-2, maxit=50))

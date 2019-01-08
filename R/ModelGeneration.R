@@ -206,8 +206,8 @@ GetPredType <- function(model, newdata) {
 #' and not in one-hot encoding the model training will fail.  This will attempt to conver the
 #' dataset into that format, or, to send an error if it fails to do so.
 #'
-#' @param training.set the training data that is in the wrong format. This is the same dataframe
-#' as in GetModelComparison parameters.
+#' @param training.set the training data that is in the wrong format. This is the same
+#' dataframe as in GetModelComparison parameters.
 #'
 #' @return The dataframe in one-hot encoding.
 #'
@@ -225,8 +225,7 @@ prepData <- function(training.set) {
         return(training.set)
       },
       error=function(cond) {
-        message(paste("Data set is not numeric or in one hot encoding.  Will try to convert", url))
-        message("Here's the original error message:")
+        message("Data set is not numeric or in one hot encoding.  Will try to convert")
         message(cond)
         # Choose a return value in case of error
         return(NA)
@@ -272,10 +271,11 @@ BuildModels <- function(training.data, training.classes, trctrl,
       }
       if (build.flags["neuralnet"]) {
         # capture output to reduce the excessive output this package gives in training
-        capture.output(neuralNet <- caret::train(training.data, training.classes, method = "nnet",
-                                  trControl=trctrl,
-                                  preProcess = c("center", "scale"),
-                                  tuneLength = tune.length))
+        capture.output(neuralNet <- caret::train(training.data, training.classes,
+                                                 method = "nnet",
+                                                 trControl=trctrl,
+                                                 preProcess = c("center", "scale"),
+                                                 tuneLength = tune.length))
         modelVec[["neuralNet"]] = neuralNet
       }
 
