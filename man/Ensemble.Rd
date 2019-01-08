@@ -2,8 +2,7 @@
 % Please edit documentation in R/Ensembling.R
 \name{Ensemble}
 \alias{Ensemble}
-\title{A helper function used by the GetModelComparison function. It will take the given inputs
-and build the data and trctrl needed to build the models.}
+\title{Ensemble Creation}
 \usage{
 Ensemble(model.list, voting.type, weights = "none", test.set = "none",
   train.type = "Balanced Accuracy")
@@ -29,8 +28,7 @@ needed if weights are given.}
 An Ensemble Object
 }
 \description{
-A helper function used by the GetModelComparison function. It will take the given inputs
-and build the data and trctrl needed to build the models.
+This function takes models and turns them into a combined Ensemble
 }
 \examples{
 # prepare a binary classification dataset

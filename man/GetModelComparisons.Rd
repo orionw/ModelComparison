@@ -2,8 +2,7 @@
 % Please edit documentation in R/ModelGeneration.R
 \name{GetModelComparisons}
 \alias{GetModelComparisons}
-\title{A function to build and return a ModelComparison object. This function does not take any
-pre-built models, instead it creates them based on input to model.list.}
+\title{A function to build and return a ModelComparison object.}
 \usage{
 GetModelComparisons(training.set, training.classes.input,
   validation = "80/20", model.list = "fast", trctrl = "none")
@@ -28,11 +27,12 @@ version. Used for customized training options including parallelization, etc.}
 A fully created ModelComparison object.
 }
 \description{
-A function to build and return a ModelComparison object. This function does not take any
+This function does not take any
 pre-built models, instead it creates them based on input to model.list.
 }
 \examples{
 titanic <- PrepareNumericTitanic()
+
 # create the models
 comp <- GetModelComparisons(titanic[, -1], titanic[, 1], validation="80/20",
                             model.list="fast")

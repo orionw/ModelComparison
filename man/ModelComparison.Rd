@@ -2,8 +2,7 @@
 % Please edit documentation in R/ModelGeneration.R
 \name{ModelComparison}
 \alias{ModelComparison}
-\title{A function to return a ModelComparison object. This function take pre-built models, and puts
-them into a ModelComparison object.}
+\title{A function to return a ModelComparison object.}
 \usage{
 ModelComparison(model.list, multi.class)
 }
@@ -16,12 +15,14 @@ ModelComparison(model.list, multi.class)
 A ModelComparison object.
 }
 \description{
-A function to return a ModelComparison object. This function take pre-built models, and puts
+This function take pre-built models, and puts
 them into a ModelComparison object.
 }
 \examples{
 models <- list(model1, model2, model3)
+
 names(models) <- c("NeuralNet", "K-NN", "SVM")
+
 comp <- ModelComparison(models, F)
 
 }

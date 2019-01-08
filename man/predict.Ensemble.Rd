@@ -2,8 +2,7 @@
 % Please edit documentation in R/Ensembling.R
 \name{predict.Ensemble}
 \alias{predict.Ensemble}
-\title{Predicts values for a Ensemble object. This involves calling the voting function specified
-at Ensemble creation or can be overriden by parameters.}
+\title{Predicts values for a Ensemble object.}
 \usage{
 \method{predict}{Ensemble}(object, newdata, voting.type = "default", ...)
 }
@@ -20,7 +19,7 @@ or "majorityWeight."}
 a list of predictions, voted on by all the models into one final prediction.
 }
 \description{
-Predicts values for a Ensemble object. This involves calling the voting function specified
+This involves calling the voting function specified
 at Ensemble creation or can be overriden by parameters.
 }
 \examples{

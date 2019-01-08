@@ -2,8 +2,7 @@
 % Please edit documentation in R/Visualization.R
 \name{plot.ModelComparison}
 \alias{plot.ModelComparison}
-\title{This function evalutates many different machine learning models and returns plots comparing
-them.}
+\title{Plot Comparisons}
 \usage{
 \method{plot}{ModelComparison}(object, labels, training.data = "none",
   predictions = "empty", plot.type = "ROC", ...)

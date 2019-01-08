@@ -2,8 +2,7 @@
 % Please edit documentation in R/ModelGeneration.R
 \name{GetTrainingInfo}
 \alias{GetTrainingInfo}
-\title{A helper function used by the GetModelComparison function. It will take the given inputs
-and build the data and trctrl needed to build the models.}
+\title{A helper function used by the GetModelComparison function.}
 \usage{
 GetTrainingInfo(training.set, training.classes.input, validation,
   trctrl.given)
@@ -23,8 +22,7 @@ A vector containg the following for training the models. It is given in this ord
 training.data, training.classes, trctrl
 }
 \description{
-A helper function used by the GetModelComparison function. It will take the given inputs
-and build the data and trctrl needed to build the models.
+It takes the given inputs, data, and trctrl needed to build the models.
 }
 \examples{
 # This function is used by GetModelComparison. It's usage is as follows:

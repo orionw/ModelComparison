@@ -65,7 +65,7 @@ test_that("Error handling on Plotting", {
                "plot.type is not a valid metric name. Please see the documentation")
   expect_error(plot(comp, titanic[, 1], titanic[, -1], plot.type="not a list"),
                "plot.type is not a valid metric name. Please see the documentation")
-  expect_error(plot(comp, titanic[, 1], titanic[, -1], plot.type=3),
+  expect_error(plot(comp, titanic[, 1], titanic[, -1], plot.type=3.0),
                "Undefined plot.type.  Please check the documentation.")
   # ROC with others, fails
   expect_error(plot(comp, titanic[, 1], titanic[, -1], plot.type=c("ROC, Specificity",

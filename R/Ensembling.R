@@ -1,5 +1,6 @@
-#' A function for extracting the prediction values from the models.  Each model returns the
-#' prediction as a DataFrame and we need it as a list or vector.
+#' A function for extracting the prediction values from the models.
+#'
+#' Each model returns the prediction as a DataFrame and we need it as a list or vector.
 #'
 #' @param pred A list containing a DataFrame of predictions.
 #'
@@ -53,7 +54,9 @@ summary.Ensemble <- function(object, ...) {
   cat(" voting type")
 }
 
-#' Predicts values for a Ensemble object. This involves calling the voting function specified
+#' Predicts values for a Ensemble object.
+#'
+#' This involves calling the voting function specified
 #' at Ensemble creation or can be overriden by parameters.
 #'
 #' @param object The Ensemble object whose models will be predicted on.
@@ -345,8 +348,9 @@ GetModelWeights <- function(ensemble, weights, test.set, train.type) {
 }
 
 
-#' A helper function used by the GetModelComparison function. It will take the given inputs
-#' and build the data and trctrl needed to build the models.
+#' Ensemble Creation
+#'
+#' This function takes models and turns them into a combined Ensemble
 #'
 #' @param model.list The models to be used in the Ensemble
 #' @param voting.type The voting type of the Ensemble (average vote, majority vote,

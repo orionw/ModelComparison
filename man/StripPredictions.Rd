@@ -2,8 +2,7 @@
 % Please edit documentation in R/Ensembling.R
 \name{StripPredictions}
 \alias{StripPredictions}
-\title{A function for extracting the prediction values from the models.  Each model returns the
-prediction as a DataFrame and we need it as a list or vector.}
+\title{A function for extracting the prediction values from the models.}
 \usage{
 StripPredictions(pred)
 }
@@ -14,8 +13,7 @@ StripPredictions(pred)
 A vector containing the predictions.
 }
 \description{
-A function for extracting the prediction values from the models.  Each model returns the
-prediction as a DataFrame and we need it as a list or vector.
+Each model returns the prediction as a DataFrame and we need it as a list or vector.
 }
 \examples{
 # This function is used by predict.Ensemble. It's usage is as follows:

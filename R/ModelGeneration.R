@@ -189,6 +189,12 @@ GetPredType <- function(model, newdata) {
   } else if (class(model)[[1]] == "lognet" || class(model)[[1]] == "glmnet") {
     return (predict(model, data.matrix(newdata), type="response", prob=TRUE))
 
+    # SVM's require more work to get the probabilites
+  } else if (class(model)[[1]] == "svm.formula" || class(model)[[1]] == "svm") {
+    svm.pred <- predict(model, data.matrix(newdata), type="response", decision.values=TRUE)
+    #return (svm.pred[1:nrow(newdata)])
+    return(attr(svm.pred, "decision.values"))
+
   } else {
     return (predict(model, newdata, type="prob", prob=TRUE))
   }
@@ -289,6 +295,22 @@ BuildModels <- function(training.data, training.classes, trctrl,
                                      preProcess = c("center", "scale"),
                                      tuneLength = tune.length)
         modelVec[["randomForest"]] = randomForest
+      }
+
+      if (build.flags["svmradial"]) {
+        svmRadial <- caret::train(training.data, training.classes, method = "svmRadial",
+                                     trControl=trctrl,
+                                     preProcess = c("center", "scale"),
+                                     tuneLength = tune.length)
+        modelVec[["svmRadial"]] = svmRadial
+      }
+
+      if (build.flags["knn"]) {
+        knn <- caret::train(training.data, training.classes, method = "knn",
+                                     trControl=trctrl,
+                                     preProcess = c("center", "scale"),
+                                     tuneLength = tune.length)
+        modelVec[["knn"]] = knn
       }
 
       if (!multi.class) {
@@ -404,8 +426,9 @@ GetBuildFlags <- function(model.list) {
   return(flag.vector)
 }
 
-#' A helper function used by the GetModelComparison function. It will take the given inputs
-#' and build the data and trctrl needed to build the models.
+#' A helper function used by the GetModelComparison function.
+#'
+#' It takes the given inputs, data, and trctrl needed to build the models.
 #'
 #' @param training.set The training data to build the models.
 #' @param training.classes.input The labels for the training data.
@@ -456,7 +479,9 @@ GetTrainingInfo <- function(training.set, training.classes.input, validation, tr
   return(list(training.data, training.classes, trctrl))
 }
 
-#' A function to build and return a ModelComparison object. This function does not take any
+#' A function to build and return a ModelComparison object.
+#'
+#' This function does not take any
 #' pre-built models, instead it creates them based on input to model.list.
 #'
 #' @param training.set The training data to build the models.
@@ -474,12 +499,12 @@ GetTrainingInfo <- function(training.set, training.classes.input, validation, tr
 #'
 #' @examples
 #' titanic <- PrepareNumericTitanic()
+#'
 #' # create the models
 #' comp <- GetModelComparisons(titanic[, -1], titanic[, 1], validation="80/20",
 #'                             model.list="fast")
 #'
 #' @export
-#' GetModelComparisons()
 GetModelComparisons <-function(training.set, training.classes.input, validation="80/20",
                                model.list="fast", trctrl="none") {
   # check to see if function is good
@@ -515,7 +540,9 @@ GetModelComparisons <-function(training.set, training.classes.input, validation=
 
 }
 
-#' A function to return a ModelComparison object. This function take pre-built models, and puts
+#' A function to return a ModelComparison object.
+#'
+#'   This function take pre-built models, and puts
 #' them into a ModelComparison object.
 #'
 #' @param model.list The training data to build the models.
@@ -525,11 +552,12 @@ GetModelComparisons <-function(training.set, training.classes.input, validation=
 #'
 #' @examples
 #' models <- list(model1, model2, model3)
+#'
 #' names(models) <- c("NeuralNet", "K-NN", "SVM")
+#'
 #' comp <- ModelComparison(models, F)
 #'
 #' @export
-#' ModelComparison()
 ModelComparison <- function(model.list, multi.class) {
   if (anyNA(model.list) || anyNA(names(model.list))) {
     stop("One of the models or model names is NA.  Please fix that and try again")

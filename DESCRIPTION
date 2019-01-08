@@ -1,8 +1,8 @@
 Package: BestModel
-Title: A package to run, tune, and compare standard machine learning models in one command.
+Title: A package to run and compare standard machine learning models with easy visualization.
 Version: 0.0.1.0000
 Authors@R: person("Orion", "Weller", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Description: This package allows for the creation of ModelComparison objects. These objects provide an easy way to visualize the metrics between the different models. You can supply the models yourself, or create them in the function.  It also allows for easy Ensembling as well as other helper functionality.
 Depends: R (>= 3.5.1)
 License: What license is it under?
 Encoding: UTF-8

@@ -29,16 +29,20 @@ test_that("Other packages used for ModelComparison", {
   matrix.glmnet <- data.matrix(titanic[, -1])
   glmnet <- glmnet(x=matrix.glmnet, y=factor(titanic$Survived), family = "binomial", lambda=.02)
 
-  models <- list(naive.bayes, rforest, neural.net, glmnet)
-  names(models) <- c("naive.bayes", "rforest", "neural.net", "glmnet")
+  svm.radial = svm(as.factor(Survived)~., data = titanic, kernel = "radial", probability=TRUE)
+
+
+  models <- list(naive.bayes, rforest, neural.net, glmnet, svm.radial)
+  names(models) <- c("naive.bayes", "rforest", "neural.net", "glmnet", "svm.radial")
 
   comp <- ModelComparison(models, F)
+  pred.basic <- predict(comp, titanic[, -1])
   # all metrics default
-  plot(comp, titanic[, 1], titanic[, -1], "all")
+  plot(comp, titanic[, 1], titanic[, -1], plot.type="all")
   # roc curve works
-  plot(comp, titanic[, 1], titanic[, -1], "roc")
+  plot(comp, titanic[, 1], titanic[, -1], plot.type="roc")
   # multiple metrics, two word metrics, uncapitalized
-  plot(comp, titanic[, 1], titanic[, -1], list("auc", "precision", "accuracy",
+  plot(comp, titanic[, 1], titanic[, -1], plot.type=list("precision", "accuracy",
                                                "recall", "detection rate"))
 
 
