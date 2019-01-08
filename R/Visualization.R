@@ -196,8 +196,8 @@ CreateCombinedPlot <- function(object, pred.basic, labels,
     metric.list[[metric.count]] = value.list
   }
   # turn list of lists into a dataframe
-  metric.df <- data.frame(t(data.frame(matrix(unlist(metric.list), nrow=length(metric.list), byrow=T),
-                          stringsAsFactors=FALSE)))
+  metric.df <- data.frame(t(data.frame(matrix(unlist(metric.list), nrow=length(metric.list),
+                                              byrow=T), stringsAsFactors=FALSE)))
   colnames(metric.df) <- metrics.for.plot
 
   # add model types for GGplot2 and get it into the right form
