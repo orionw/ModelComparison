@@ -5,7 +5,7 @@
 \title{Plot Comparisons}
 \usage{
 \method{plot}{ModelComparison}(object, labels, training.data = "none",
-  predictions = "empty", plot.type = "ROC", ...)
+  predictions = "empty", plot.type = "ROC", format.data = TRUE, ...)
 }
 \arguments{
 \item{object}{The ModelComparison object}
@@ -20,6 +20,10 @@ provided.}
 
 \item{plot.type}{A vector of metrics (as characters) that are the values seen in the plot
 (examples include ROC, AUC, Accuracy, etc.)  Note: ROC cannot be plotted with other metrics.}
+
+\item{format.data}{Whether the data should be transformed into one-hot encoding if it needs
+to be. The default is TRUE. If you would like to predict on unchanged data that is not
+in the right format, set this to false at your own risk.}
 }
 \description{
 This function evalutates many different machine learning models and returns plots comparing
@@ -28,13 +32,17 @@ them.
 \examples{
 # prepare the dataset
 titanic <- PrepareNumericTitanic()
+
 # create the models
 comp <- GetModelComparisons(titanic[, -1], titanic[, 1], model.list = "all")
+
 # Default.  Plot AUC, Accuracy, Recall, and Precision
 plot(comp, titanic[, 1], titanic[, -1], plot.type=c("All"))
+
 # Choose specific metrics
 plot(comp, titanic[, 1], titanic[, -1], plot.type=c("Specificity", "Precision", "AUC",
 "Recall", "Detection Rate"))
+
 # plot overlapping ROC lines
 plot(comp, titanic[, 1], titanic[, -1], plot.type="roc")
 }

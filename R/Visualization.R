@@ -54,8 +54,6 @@ plot.ModelComparison <- function(object, labels, training.data = "none", predict
   if (predictions == "empty") {
     # Predictions not given - create them here from training data
     pred.basic <- predict(object, newdata=training.data, type="prob")
-    .getClass <- function(model) { return(class(model)[[1]])    }
-    names(pred.basic) <- sapply(object$model.list, .getClass)
   } else {
     # use the given predictions
     pred.basic = predictions

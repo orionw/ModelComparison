@@ -44,8 +44,11 @@ test_that("Other packages used for ModelComparison", {
   # multiple metrics, two word metrics, uncapitalized
   plot(comp, titanic[, 1], titanic[, -1], plot.type=list("precision", "accuracy",
                                                "recall", "detection rate"))
+  # verify we can  make an Ensemble
+  ensem <- Ensemble(comp$model.list, "majorityWeight", titanic[, -1], titanic[, 1])
+  expect_equal(length(ensem$weight.list), length(models))
 
-
-  # ensem1 <- Ensemble(comp$model.list, "majorityWeight", iris[,1:4], iris[,5])
+  pred.ensem <- predict(ensem, titanic[, -1])
+  expect_equal(length(titanic[, 1]), length(pred.ensem))
 
 })

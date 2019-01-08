@@ -162,6 +162,8 @@ predict.ModelComparison <- function(object, newdata, ...) {
       i = i + 1
       pred.basic[[i]] = GetPredType(model, newdata)
     }
+    .getClass <- function(model) { return(class(model)[[1]])    }
+    names(pred.basic) <- sapply(object$model.list, .getClass)
     return(pred.basic)
   }
 }

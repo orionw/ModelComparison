@@ -3,10 +3,6 @@ context("Ensemble - Model Comparison Integration")
 # load the libraries
 library(BestModel)
 
-# test_that("Ensemble plot", {
-#   # TODO: decide what to do with this
-# })
-
 test_that("Ensemble used in a ModelComparison", {
   # prepare the dataset
   iris <- PrepareIris()
@@ -21,5 +17,5 @@ test_that("Ensemble used in a ModelComparison", {
   comp <- ModelComparison(mlist, F)
   expect_equal(class(comp), "ModelComparison")
   # make sure plot works
-  print(plot(comp, iris[, 5], iris[,1:4]))
+  plot(comp, iris[, 5], iris[,1:4])
 })

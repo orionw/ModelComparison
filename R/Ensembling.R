@@ -13,7 +13,7 @@
 #' @keywords internal
 #' @export
 StripPredictions <- function(pred) {
-  if (class(pred) == "list") {
+  if (class(pred)[[1]] == "list") {
     realPredictions <- list(length = length(pred))
     i = 0
     for (model.pred in pred) {
@@ -84,7 +84,7 @@ predict.Ensemble <- function(object, newdata, voting.type="default", ...) {
   i = 0
   for (model in object$models) {
     i = i + 1
-    preds[[i]] <-  StripPredictions(predict(model, newdata = newdata, type="prob"))
+    preds[[i]] <-  StripPredictions(GetPredType(model, newdata))
   }
 
     # input overrides set voting type
@@ -288,16 +288,25 @@ GetFactorEqual <- function(pred) {
 GetWeightsFromTestingSet <- function(ensemble, df.train, test.set, train.type) {
   i = 0
   preds = list(length = length(ensemble$models))
-  for (model in ensemble$models) {
-    i = i + 1
-    preds[[i]] <- predict(model, df.train, type="prob")
-  }
+  fakeModelComp <- list()
+  class(fakeModelComp) <- "ModelComparison"
+  fakeModelComp$model.list <- ensemble$models
+  fakeModelComp$.multi.class <- FALSE
+  preds <- predict.ModelComparison(fakeModelComp, df.train, type="prob")
+  # names(preds) <- names(ensemble$models)
+
   weights <- list(length = length(ensemble$models))
   test.set <- GetFactorEqual(test.set)
   i = 0
   for (ind.pred in preds) {
     i = i + 1
-    conf.matrix = caret::confusionMatrix(test.set, as.factor(round(ind.pred[, 1])))
+    # those tricky SVM's
+    if (names(preds)[[i]] == "svm.formula") {
+      pred <- GetSVMScale(ind.pred)
+      conf.matrix = caret::confusionMatrix(test.set, as.factor(pred))
+    } else {
+      conf.matrix = caret::confusionMatrix(test.set, as.factor(round(ind.pred[, 1])))
+    }
     weights[[i]] = conf.matrix$byClass[train.type][[1]]
   }
   return(weights)
