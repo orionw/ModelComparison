@@ -2,6 +2,7 @@
 An R Package to return and compare variety of different model types, complete with hyper-parameter tuning options
 
 Install by using `install_github("orionw/BestModel")` from the `devtools` library
+Publication in CRAN forthcoming
 
 Example usage:
 ```R
