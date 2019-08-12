@@ -1,4 +1,4 @@
-Package: BestModel
+Package: ModelComparison
 Title: A package to run and compare standard machine learning models with easy visualization
 Version: 0.0.1.0000
 Authors@R: person("Orion", "Weller", email = "first.last@example.com", role = c("aut", "cre"))

@@ -1,7 +1,7 @@
 context("Input ModelComparison Functionality")
 
 # load the libraries
-library(BestModel)
+library(ModelComparison)
 
 ## Ouput is ordered in:
 #  glm glmnet randomforest knn svmradial svmlinear neuralnet

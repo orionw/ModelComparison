@@ -1,7 +1,7 @@
 context("Stacking Helper Functions")
 
 # load the libraries
-library(BestModel)
+library(ModelComparison)
 
 test_that("Add predictions to df for training with stacking", {
   # helper function for a 2 response iris dataset
@@ -16,7 +16,7 @@ test_that("Add predictions to df for training with stacking", {
     # get expected names
     expected.names <- c(as.character(colnames(x.values)), as.character(names(comp$model.list)))
     # get the new dataframe
-    df.for.stacking <- BestModel::GetPredictionsForStacking(comp$model.list, x.values)
+    df.for.stacking <- ModelComparison::GetPredictionsForStacking(comp$model.list, x.values)
     expect_equal(dim(df.for.stacking), dim.exp.x)
     expect_equal(names(df.for.stacking), expected.names)
 })

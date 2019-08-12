@@ -1,7 +1,7 @@
 context("Summary Info Testing")
 
 # load the libraries
-library(BestModel)
+library(ModelComparison)
 
 test_that("Add predictions to df for training with stacking", {
   # helper function for a 2 response iris dataset

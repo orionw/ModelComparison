@@ -1,11 +1,11 @@
 context("Voting with Ensemble Functionality")
 
 # load the libraries
-library(BestModel)
+library(ModelComparison)
 
 # helper function for a 2 response iris dataset
 PrepareNumericTitanic <- function() {
-  titanic <- read.csv("~/BestModel/tests/testthat/titanic.csv")
+  titanic <- read.csv("~/ModelComparison/tests/testthat/titanic.csv")
   titanic <- titanic[, c("Survived", "Age",
                          "Siblings.Spouses.Aboard", "Parents.Children.Aboard", "Fare")]
   titanic$Survived = as.factor(titanic$Survived)

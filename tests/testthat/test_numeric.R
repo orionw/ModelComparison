@@ -4,7 +4,7 @@ context("Numeric Dataset Functionality")
 library(mlbench)
 library(plyr)
 library(ggplot2)
-library(BestModel)
+library(ModelComparison)
 library(caret)
 
 test_that("Retured object has the correct structure", {

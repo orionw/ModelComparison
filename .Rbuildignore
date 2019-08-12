@@ -1,2 +1,3 @@
-^BestModel\.Rproj$
+^ModelComparison\.Rproj$
 ^\.Rproj\.user$
+^\.travis\.yml$

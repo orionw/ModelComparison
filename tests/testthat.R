@@ -1,4 +1,4 @@
 library(testthat)
-library(BestModel)
+library(ModelComparison)
 
-test_check("BestModel")
+test_check("ModelComparison")

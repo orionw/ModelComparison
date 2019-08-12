@@ -1,7 +1,7 @@
 context("Ensemble - Model Comparison Integration")
 
 # load the libraries
-library(BestModel)
+library(ModelComparison)
 
 test_that("Ensemble used in a ModelComparison", {
   # prepare the dataset
