@@ -6,8 +6,6 @@ An R Package to return and compare variety of different model types, complete wi
 
 Install by using `install_github("orionw/ModelComparison")` after installing and loading the `devtools` library
 
-Publication in CRAN forthcoming
-
 Example usage:
 ```R
 library(ModelComparison)
