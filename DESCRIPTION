@@ -17,6 +17,7 @@ Imports:
   glmnet,
   mlbench,
   nnet,
+  kernlab
   plyr,
   randomForest
 RoxygenNote: 6.1.1
