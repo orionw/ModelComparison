@@ -9,8 +9,14 @@ Encoding: UTF-8
 LazyData: true
 Suggests: testthat
 Imports:
-	caret,
+  caret,
   pROC,
   ggplot2,
-  reshape2
+  reshape2,
+  e1071,
+  glmnet,
+  mlbench,
+  nnet,
+  plyr,
+  randomForest
 RoxygenNote: 6.1.1
