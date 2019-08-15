@@ -63,7 +63,9 @@ PrepareNumericTitanic <- function() {
 
   print("Listing dirs")
   print(list.files(getwd()))
-  titanic <- read.csv("titanic.csv")
+  print(list.files("BestModel/tests/testthat/ModelComparison"))
+  print(getwd())
+  titanic <- read.csv("tests/titanic.csv")
   titanic <- titanic[, c("Survived", "Age",
                          "Siblings.Spouses.Aboard", "Parents.Children.Aboard", "Fare")]
   titanic$Survived = as.factor(titanic$Survived)

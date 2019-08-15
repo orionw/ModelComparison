@@ -72,13 +72,13 @@ summary.Ensemble <- function(object, ...) {
 #'
 #' @examples
 #' # load the csv file for the dataset "titanic"
-#' titanic <- PrepareNumericTitanic()
+#' # titanic <- PrepareNumericTitanic()
 #' # create the ModelComparison object by passing in the training set and training labels
-#' comp <- GetModelComparisons(titanic[, -1], titanic[, 1])
+#' # comp <- GetModelComparisons(titanic[, -1], titanic[, 1])
 #' # use the models in the comparison to form a one model Ensemble
-#' ensem <- Ensemble(comp$model.list, "majorityWeight", iris[,1:4], iris[,5])
+#' # ensem <- Ensemble(comp$model.list, "majorityWeight", iris[,1:4], iris[,5])
 #' # predict by passing in the new df for the object to predict on
-#' pred.list <- predict(comp, titanic[, -1], voting.type="averageVote")
+#' # pred.list <- predict(comp, titanic[, -1], voting.type="averageVote")
 #'
 #' @export
 predict.Ensemble <- function(object, newdata, voting.type="default", ...) {
