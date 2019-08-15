@@ -60,6 +60,9 @@ PrepareIris <- function() {
 #' @keywords internal
 #' @export
 PrepareNumericTitanic <- function() {
+
+  print("Listing dirs")
+  print(list.files(getwd()))
   titanic <- read.csv("titanic.csv")
   titanic <- titanic[, c("Survived", "Age",
                          "Siblings.Spouses.Aboard", "Parents.Children.Aboard", "Fare")]
