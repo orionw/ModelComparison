@@ -4,7 +4,7 @@ context("Validation Types")
 library(ModelComparison)
 
 PrepareNumericTitanic <- function() {
-  titanic <- read.csv("~/ModelComparison/tests/testthat/titanic.csv")
+  titanic <- read.csv("titanic.csv")
   titanic <- titanic[, c("Survived", "Age",
                          "Siblings.Spouses.Aboard", "Parents.Children.Aboard", "Fare")]
   titanic$Survived = as.factor(titanic$Survived)
