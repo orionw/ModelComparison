@@ -11,6 +11,7 @@
 #' @param plot.type A vector of metrics (as characters) that are the values seen in the plot
 #' (examples include ROC, AUC, Accuracy, etc.)  Note: ROC cannot be plotted with other metrics.
 #' @param format.data Whether the data should be transformed into one-hot encoding if it needs
+  - ./travis-tool.sh dump_logs
 #' to be. The default is TRUE. If you would like to predict on unchanged data that is not
 #' in the right format, set this to false at your own risk.
 #' @param ... Other arguments for plotting
@@ -36,7 +37,7 @@ plot.ModelComparison <- function(object, labels, training.data = "none", predict
                                  plot.type="ROC", format.data=TRUE, ...) {
   # error check the arguments
   if (class(training.data) != "data.frame" && training.data == "none") {
-        if (predictions == "empty") {
+        if (class(predictions) == str && predictions  == "empty") {
       # predictions somehow failed to happen - predict in here
       stop("Both training data and prediction vector were not given.  Give at least one to plot.")
     } else {
