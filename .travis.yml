@@ -3,6 +3,15 @@
 language: R
 r:
  - 3.5.1
+
+r_packages:
+ - devtools
+ - covr
+
 cache: packages
+
 warnings_are_errors: false
 
+after_success:
+ - CODECOV_TOKEN="3e4dcb5e-19f0-4853-b037-5d76d3fe513c"
+ - Rscript -e 'library(covr);codecov()'
