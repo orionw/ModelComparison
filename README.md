@@ -1,5 +1,6 @@
 <!-- badges: start -->
 [![Travis build status](https://travis-ci.org/orionw/ModelComparison.svg?branch=master)](https://travis-ci.org/orionw/ModelComparison)
+[![codecov](https://codecov.io/gh/orionw/ModelComparison/branch/master/graph/badge.svg)](https://codecov.io/gh/orionw/ModelComparison)
   <!-- badges: end -->
 # ModelComparison
 An R Package to return and compare variety of different model types, complete with hyper-parameter tuning options
