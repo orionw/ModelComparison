@@ -2,3 +2,10 @@
 
 language: R
 cache: packages
+
+r_binary_packages:
+  - devtools
+  - roxygen2
+
+after_script:
+  - Rscript -e 'devtools::install();devtools::test()'
