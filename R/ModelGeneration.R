@@ -76,7 +76,7 @@ GetAccuracy <- function(object) {
 }
 
 #' Gives a summary of the models used in the ModelComparison object
-#'
+#' @param object the ModelComparison object to summarize
 #' @param extra a boolean value on whether accuracy values will be returned, if present.
 #' By default this value is TRUE
 #' @param ... Other arguments, if needed
@@ -85,11 +85,11 @@ GetAccuracy <- function(object) {
 #'
 #' @examples
 #' # load the csv file for the dataset "titanic"
-#' titanic <- PrepareNumericTitanic()
+#' # titanic <- PrepareNumericTitanic()
 #' # create the ModelComparison object by passing in the training set and training labels
-#' comp <- GetModelComparisons(titanic[, -1], titanic[, 1])
+#' # comp <- GetModelComparisons(titanic[, -1], titanic[, 1])
 #' # predict by passing in the new df for the object to predict on
-#' summary(comp)
+#' # summary(comp)
 #'
 #' @export
 summary.ModelComparison <- function(object, extra=TRUE, ...) {
@@ -129,11 +129,11 @@ summary.ModelComparison <- function(object, extra=TRUE, ...) {
 #'
 #' @examples
 #' # load the csv file for the dataset "titanic"
-#' titanic <- PrepareNumericTitanic()
+#' # titanic <- PrepareNumericTitanic()
 #' # create the ModelComparison object by passing in the training set and training labels
-#' comp <- GetModelComparisons(titanic[, -1], titanic[, 1])
+#' # comp <- GetModelComparisons(titanic[, -1], titanic[, 1])
 #' # predict by passing in the new df for the object to predict on
-#' pred.list <- predict(comp, titanic[, -1])
+#' # pred.list <- predict(comp, titanic[, -1])
 #'
 #' @export
 predict.ModelComparison <- function(object, newdata, ...) {
@@ -555,11 +555,9 @@ GetModelComparisons <-function(training.set, training.classes.input, validation=
 #' @return A ModelComparison object.
 #'
 #' @examples
-#' models <- list(model1, model2, model3)
-#'
-#' names(models) <- c("NeuralNet", "K-NN", "SVM")
-#'
-#' comp <- ModelComparison(models, F)
+#' # models <- list(model1, model2, model3)
+#' # names(models) <- c("NeuralNet", "K-NN", "SVM")
+#' # comp <- ModelComparison(models, F)
 #'
 #' @export
 ModelComparison <- function(model.list, multi.class) {

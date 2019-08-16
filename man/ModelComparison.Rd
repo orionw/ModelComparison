@@ -25,10 +25,8 @@ This function take pre-built models, and puts
 them into a ModelComparison object.
 }
 \examples{
-models <- list(model1, model2, model3)
-
-names(models) <- c("NeuralNet", "K-NN", "SVM")
-
-comp <- ModelComparison(models, F)
+# models <- list(model1, model2, model3)
+# names(models) <- c("NeuralNet", "K-NN", "SVM")
+# comp <- ModelComparison(models, F)
 
 }

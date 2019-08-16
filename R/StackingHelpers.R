@@ -60,12 +60,10 @@ PrepareIris <- function() {
 #' @keywords internal
 #' @export
 PrepareNumericTitanic <- function() {
-
-  print("Listing dirs")
-  print(list.files(getwd()))
-  print(list.files("BestModel/tests/testthat/ModelComparison"))
-  print(getwd())
-  titanic <- read.csv("tests/titanic.csv")
+  file_path <- system.file("extdata", "titanic.csv", package = "ModelComparison", mustWork = TRUE)
+  print("This is the dataset path")
+  print(file_path)
+  titanic <- read.csv(file_path)
   titanic <- titanic[, c("Survived", "Age",
                          "Siblings.Spouses.Aboard", "Parents.Children.Aboard", "Fare")]
   titanic$Survived = as.factor(titanic$Survived)

@@ -22,10 +22,10 @@ Predicts values for a ModelComparison object.
 }
 \examples{
 # load the csv file for the dataset "titanic"
-titanic <- PrepareNumericTitanic()
+# titanic <- PrepareNumericTitanic()
 # create the ModelComparison object by passing in the training set and training labels
-comp <- GetModelComparisons(titanic[, -1], titanic[, 1])
+# comp <- GetModelComparisons(titanic[, -1], titanic[, 1])
 # predict by passing in the new df for the object to predict on
-pred.list <- predict(comp, titanic[, -1])
+# pred.list <- predict(comp, titanic[, -1])
 
 }

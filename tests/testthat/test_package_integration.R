@@ -3,21 +3,6 @@ context("Other package integration")
 # load the libraries
 library(ModelComparison)
 
-
-PrepareNumericTitanic <- function() {
-
-  print("Listing dirs")
-  print(list.files(getwd()))
-  print(list.files("ModelComparison"))
-  print(getwd())
-  titanic <- read.csv("titanic.csv")
-  titanic <- titanic[, c("Survived", "Age",
-                         "Siblings.Spouses.Aboard", "Parents.Children.Aboard", "Fare")]
-  titanic$Survived = as.factor(titanic$Survived)
-  levels(titanic$Survived) <- c("died", "survived")
-  return(titanic)
-}
-
 test_that("Other packages used for ModelComparison", {
   # prepare the dataset
   titanic <- PrepareNumericTitanic()
