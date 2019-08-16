@@ -4,6 +4,5 @@ language: R
 r:
  - 3.5.1
 cache: packages
+warnings_are_errors: false
 
-after_failure:
-  - ./travis-tool.sh dump_logs
